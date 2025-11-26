@@ -23,150 +23,164 @@ class DemoSeeder extends Seeder
         $centralInstitution = Institution::where('code', 'CENTRAL')->first();
         $admin = User::where('email', 'admin@example.com')->first();
 
-        // Create additional institutions
-        $province1 = Institution::create([
-            'name' => 'Province A',
-            'code' => 'PROV-A',
-            'level' => 'province',
-            'parent_institution_id' => $centralInstitution->id,
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
+        // Create or update additional institutions
+        $province1 = Institution::updateOrCreate(
+            ['code' => 'PROV-A'],
+            [
+                'name' => 'Province A',
+                'level' => 'province',
+                'parent_institution_id' => $centralInstitution->id,
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
 
-        $province2 = Institution::create([
-            'name' => 'Province B',
-            'code' => 'PROV-B',
-            'level' => 'province',
-            'parent_institution_id' => $centralInstitution->id,
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
+        $province2 = Institution::updateOrCreate(
+            ['code' => 'PROV-B'],
+            [
+                'name' => 'Province B',
+                'level' => 'province',
+                'parent_institution_id' => $centralInstitution->id,
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
 
-        // Create sample users
-        $enumerator1 = User::create([
-            'name' => 'John Enumerator',
-            'email' => 'enumerator1@example.com',
-            'password' => Hash::make('password'),
-            'institution_id' => $province1->id,
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
-        $enumerator1->assignRole('enumerator');
+        // Create or update sample users
+        $enumerator1 = User::updateOrCreate(
+            ['email' => 'enumerator1@example.com'],
+            [
+                'name' => 'John Enumerator',
+                'password' => Hash::make('password'),
+                'institution_id' => $province1->id,
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
+        $enumerator1->syncRoles(['enumerator']);
 
-        $enumerator2 = User::create([
-            'name' => 'Jane Enumerator',
-            'email' => 'enumerator2@example.com',
-            'password' => Hash::make('password'),
-            'institution_id' => $province2->id,
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
-        $enumerator2->assignRole('enumerator');
+        $enumerator2 = User::updateOrCreate(
+            ['email' => 'enumerator2@example.com'],
+            [
+                'name' => 'Jane Enumerator',
+                'password' => Hash::make('password'),
+                'institution_id' => $province2->id,
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
+        $enumerator2->syncRoles(['enumerator']);
 
-        $viewer1 = User::create([
-            'name' => 'Bob Viewer',
-            'email' => 'viewer1@example.com',
-            'password' => Hash::make('password'),
-            'institution_id' => $province1->id,
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
-        $viewer1->assignRole('viewer');
+        $viewer1 = User::updateOrCreate(
+            ['email' => 'viewer1@example.com'],
+            [
+                'name' => 'Bob Viewer',
+                'password' => Hash::make('password'),
+                'institution_id' => $province1->id,
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
+        $viewer1->syncRoles(['viewer']);
 
-        $viewer2 = User::create([
-            'name' => 'Alice Viewer',
-            'email' => 'viewer2@example.com',
-            'password' => Hash::make('password'),
-            'institution_id' => $province2->id,
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
-        $viewer2->assignRole('viewer');
+        $viewer2 = User::updateOrCreate(
+            ['email' => 'viewer2@example.com'],
+            [
+                'name' => 'Alice Viewer',
+                'password' => Hash::make('password'),
+                'institution_id' => $province2->id,
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
+        $viewer2->syncRoles(['viewer']);
 
-        // Create sample questionnaires
-        $questionnaire1 = Questionnaire::create([
-            'code' => 'HEALTH-SURVEY',
-            'version' => 1,
-            'title' => 'Health Facility Survey',
-            'description' => 'A comprehensive survey for health facility assessment',
-            'surveyjs_json' => [
+        // Create or update sample questionnaires
+        $questionnaire1 = Questionnaire::updateOrCreate(
+            ['code' => 'HEALTH-SURVEY', 'version' => 1],
+            [
                 'title' => 'Health Facility Survey',
-                'pages' => [
-                    [
-                        'name' => 'page1',
-                        'title' => 'Basic Information',
-                        'elements' => [
-                            [
-                                'type' => 'text',
-                                'name' => 'facility_name',
-                                'title' => 'Facility Name',
-                                'isRequired' => true,
-                            ],
-                            [
-                                'type' => 'dropdown',
-                                'name' => 'facility_type',
-                                'title' => 'Facility Type',
-                                'isRequired' => true,
-                                'choices' => ['Hospital', 'Health Center', 'Clinic', 'Pharmacy'],
-                            ],
-                            [
-                                'type' => 'text',
-                                'name' => 'staff_count',
-                                'title' => 'Number of Staff',
-                                'inputType' => 'number',
+                'description' => 'A comprehensive survey for health facility assessment',
+                'surveyjs_json' => [
+                    'title' => 'Health Facility Survey',
+                    'pages' => [
+                        [
+                            'name' => 'page1',
+                            'title' => 'Basic Information',
+                            'elements' => [
+                                [
+                                    'type' => 'text',
+                                    'name' => 'facility_name',
+                                    'title' => 'Facility Name',
+                                    'isRequired' => true,
+                                ],
+                                [
+                                    'type' => 'dropdown',
+                                    'name' => 'facility_type',
+                                    'title' => 'Facility Type',
+                                    'isRequired' => true,
+                                    'choices' => ['Hospital', 'Health Center', 'Clinic', 'Pharmacy'],
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'name' => 'staff_count',
+                                    'title' => 'Number of Staff',
+                                    'inputType' => 'number',
+                                ],
                             ],
                         ],
                     ],
                 ],
-            ],
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
 
-        $questionnaire2 = Questionnaire::create([
-            'code' => 'EDUCATION-SURVEY',
-            'version' => 1,
-            'title' => 'Education Assessment Survey',
-            'description' => 'Survey for assessing educational institutions',
-            'surveyjs_json' => [
+        $questionnaire2 = Questionnaire::updateOrCreate(
+            ['code' => 'EDUCATION-SURVEY', 'version' => 1],
+            [
                 'title' => 'Education Assessment Survey',
-                'pages' => [
-                    [
-                        'name' => 'page1',
-                        'title' => 'School Information',
-                        'elements' => [
-                            [
-                                'type' => 'text',
-                                'name' => 'school_name',
-                                'title' => 'School Name',
-                                'isRequired' => true,
-                            ],
-                            [
-                                'type' => 'dropdown',
-                                'name' => 'school_level',
-                                'title' => 'School Level',
-                                'isRequired' => true,
-                                'choices' => ['Primary', 'Secondary', 'High School', 'University'],
-                            ],
-                            [
-                                'type' => 'text',
-                                'name' => 'student_count',
-                                'title' => 'Number of Students',
-                                'inputType' => 'number',
-                            ],
-                            [
-                                'type' => 'text',
-                                'name' => 'teacher_count',
-                                'title' => 'Number of Teachers',
-                                'inputType' => 'number',
+                'description' => 'Survey for assessing educational institutions',
+                'surveyjs_json' => [
+                    'title' => 'Education Assessment Survey',
+                    'pages' => [
+                        [
+                            'name' => 'page1',
+                            'title' => 'School Information',
+                            'elements' => [
+                                [
+                                    'type' => 'text',
+                                    'name' => 'school_name',
+                                    'title' => 'School Name',
+                                    'isRequired' => true,
+                                ],
+                                [
+                                    'type' => 'dropdown',
+                                    'name' => 'school_level',
+                                    'title' => 'School Level',
+                                    'isRequired' => true,
+                                    'choices' => ['Primary', 'Secondary', 'High School', 'University'],
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'name' => 'student_count',
+                                    'title' => 'Number of Students',
+                                    'inputType' => 'number',
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'name' => 'teacher_count',
+                                    'title' => 'Number of Teachers',
+                                    'inputType' => 'number',
+                                ],
                             ],
                         ],
                     ],
                 ],
-            ],
-            'is_active' => true,
-            'created_by' => $admin->id,
-        ]);
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
 
         // Create sample submissions
         // Draft submissions

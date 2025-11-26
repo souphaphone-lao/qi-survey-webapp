@@ -13,7 +13,7 @@ class RoleAndPermissionSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
+        // Create or update permissions
         $permissions = [
             // User permissions
             'users.view',
@@ -45,15 +45,15 @@ class RoleAndPermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Create roles and assign permissions
-        $adminRole = Role::create(['name' => 'admin']);
-        $adminRole->givePermissionTo(Permission::all());
+        // Create or update roles and assign permissions
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole->syncPermissions(Permission::all());
 
-        $enumeratorRole = Role::create(['name' => 'enumerator']);
-        $enumeratorRole->givePermissionTo([
+        $enumeratorRole = Role::firstOrCreate(['name' => 'enumerator']);
+        $enumeratorRole->syncPermissions([
             'institutions.view',
             'questionnaires.view',
             'submissions.view',
@@ -63,8 +63,8 @@ class RoleAndPermissionSeeder extends Seeder
             'dashboard.view',
         ]);
 
-        $viewerRole = Role::create(['name' => 'viewer']);
-        $viewerRole->givePermissionTo([
+        $viewerRole = Role::firstOrCreate(['name' => 'viewer']);
+        $viewerRole->syncPermissions([
             'institutions.view',
             'questionnaires.view',
             'submissions.view',

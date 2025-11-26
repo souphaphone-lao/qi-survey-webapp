@@ -13,34 +13,40 @@ class UserSeeder extends Seeder
     {
         $centralInstitution = Institution::where('code', 'CENTRAL')->first();
 
-        $admin = User::create([
-            'name' => 'System Administrator',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'institution_id' => $centralInstitution?->id,
-            'is_active' => true,
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'System Administrator',
+                'password' => Hash::make('password'),
+                'institution_id' => $centralInstitution?->id,
+                'is_active' => true,
+            ]
+        );
 
-        $admin->assignRole('admin');
+        $admin->syncRoles(['admin']);
 
-        $enumerator = User::create([
-            'name' => 'Test Enumerator',
-            'email' => 'enumerator@example.com',
-            'password' => Hash::make('password'),
-            'institution_id' => $centralInstitution?->id,
-            'is_active' => true,
-        ]);
+        $enumerator = User::updateOrCreate(
+            ['email' => 'enumerator@example.com'],
+            [
+                'name' => 'Test Enumerator',
+                'password' => Hash::make('password'),
+                'institution_id' => $centralInstitution?->id,
+                'is_active' => true,
+            ]
+        );
 
-        $enumerator->assignRole('enumerator');
+        $enumerator->syncRoles(['enumerator']);
 
-        $viewer = User::create([
-            'name' => 'Test Viewer',
-            'email' => 'viewer@example.com',
-            'password' => Hash::make('password'),
-            'institution_id' => $centralInstitution?->id,
-            'is_active' => true,
-        ]);
+        $viewer = User::updateOrCreate(
+            ['email' => 'viewer@example.com'],
+            [
+                'name' => 'Test Viewer',
+                'password' => Hash::make('password'),
+                'institution_id' => $centralInstitution?->id,
+                'is_active' => true,
+            ]
+        );
 
-        $viewer->assignRole('viewer');
+        $viewer->syncRoles(['viewer']);
     }
 }
