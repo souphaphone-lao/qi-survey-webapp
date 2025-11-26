@@ -43,12 +43,9 @@ class SubmissionPolicy
             return true;
         }
 
-        // Enumerators can only update their own submissions that are draft or rejected
-        if ($submission->created_by === $user->id && $submission->canBeEdited()) {
-            return true;
-        }
-
-        return false;
+        // Enumerators can only update their own submissions
+        // (Controller will validate if submission can be edited based on status)
+        return $submission->created_by === $user->id;
     }
 
     public function delete(User $user, Submission $submission): bool

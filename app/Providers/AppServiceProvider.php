@@ -2,11 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\Department;
 use App\Models\Institution;
+use App\Models\QuestionPermission;
 use App\Models\Questionnaire;
 use App\Models\Submission;
 use App\Models\User;
+use App\Policies\DepartmentPolicy;
 use App\Policies\InstitutionPolicy;
+use App\Policies\QuestionPermissionPolicy;
 use App\Policies\QuestionnairePolicy;
 use App\Policies\SubmissionPolicy;
 use App\Policies\UserPolicy;
@@ -26,7 +30,9 @@ class AppServiceProvider extends ServiceProvider
         // Register policies
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Institution::class, InstitutionPolicy::class);
+        Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Questionnaire::class, QuestionnairePolicy::class);
+        Gate::policy(QuestionPermission::class, QuestionPermissionPolicy::class);
         Gate::policy(Submission::class, SubmissionPolicy::class);
 
         // Set default password validation rules

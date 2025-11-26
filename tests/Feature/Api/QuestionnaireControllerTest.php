@@ -179,6 +179,21 @@ test('non-admin cannot update questionnaire', function () {
     $response = $this->withHeader('Authorization', "Bearer {$token}")
         ->putJson("/api/questionnaires/{$questionnaire->id}", [
             'title' => 'Updated',
+            'description' => 'Updated description',
+            'surveyjs_json' => [
+                'pages' => [
+                    [
+                        'name' => 'page1',
+                        'elements' => [
+                            [
+                                'type' => 'text',
+                                'name' => 'question1',
+                                'title' => 'Updated question',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
     $response->assertForbidden();
@@ -198,7 +213,8 @@ test('admin can delete questionnaire', function () {
 
     $response->assertOk();
 
-    $this->assertDatabaseMissing('questionnaires', [
+    // Check that the questionnaire was soft deleted
+    $this->assertSoftDeleted('questionnaires', [
         'id' => $questionnaire->id,
     ]);
 });

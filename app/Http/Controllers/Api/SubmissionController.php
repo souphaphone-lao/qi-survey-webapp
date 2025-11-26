@@ -7,12 +7,17 @@ use App\Http\Requests\SubmissionRequest;
 use App\Http\Resources\SubmissionResource;
 use App\Models\Questionnaire;
 use App\Models\Submission;
+use App\Services\QuestionPermissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SubmissionController extends Controller
 {
+    public function __construct(private QuestionPermissionService $permissionService)
+    {
+    }
+
     public function index(Request $request): AnonymousResourceCollection
     {
         $this->authorize('viewAny', Submission::class);
@@ -118,6 +123,12 @@ class SubmissionController extends Controller
             'rejectedBy',
         ]);
 
+        // Add question permissions map for the authenticated user
+        $submission->question_permissions = $this->permissionService->getPermissionsMap(
+            auth()->user(),
+            $submission
+        );
+
         return new SubmissionResource($submission);
     }
 
@@ -130,6 +141,20 @@ class SubmissionController extends Controller
             return response()->json([
                 'message' => 'Cannot edit a submission that has been submitted or approved',
             ], 422);
+        }
+
+        // Validate question permissions for the answers being submitted
+        $invalidQuestions = $this->permissionService->validateAnswers(
+            auth()->user(),
+            $submission,
+            $request->answers_json ?? []
+        );
+
+        if (!empty($invalidQuestions)) {
+            return response()->json([
+                'message' => 'You do not have permission to edit these questions',
+                'invalid_questions' => $invalidQuestions,
+            ], 403);
         }
 
         $submission->update([
@@ -154,10 +179,11 @@ class SubmissionController extends Controller
     {
         $this->authorize('delete', $submission);
 
-        // Only allow deletion of draft submissions
-        if (!$submission->isDraft()) {
+        // Only admins can delete non-draft submissions
+        $user = auth()->user();
+        if (!$submission->isDraft() && !$user->hasRole('admin')) {
             return response()->json([
-                'message' => 'Only draft submissions can be deleted',
+                'message' => 'Cannot delete submitted submission',
             ], 422);
         }
 

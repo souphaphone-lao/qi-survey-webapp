@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\SubmissionStatusChanged;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,6 +52,11 @@ class Submission extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->createdBy();
     }
 
     public function updatedBy(): BelongsTo
@@ -125,6 +131,8 @@ class Submission extends Model
 
     public function submit(): void
     {
+        $oldStatus = $this->status;
+
         DB::table($this->getTable())
             ->where('id', $this->id)
             ->update([
@@ -133,10 +141,14 @@ class Submission extends Model
                 'updated_at' => now(),
             ]);
         $this->refresh();
+
+        SubmissionStatusChanged::dispatch($this, $oldStatus, 'submitted');
     }
 
     public function approve(int $userId): void
     {
+        $oldStatus = $this->status;
+
         DB::table($this->getTable())
             ->where('id', $this->id)
             ->update([
@@ -146,10 +158,14 @@ class Submission extends Model
                 'updated_at' => now(),
             ]);
         $this->refresh();
+
+        SubmissionStatusChanged::dispatch($this, $oldStatus, 'approved', $userId);
     }
 
     public function reject(int $userId, string $comments): void
     {
+        $oldStatus = $this->status;
+
         DB::table($this->getTable())
             ->where('id', $this->id)
             ->update([
@@ -160,5 +176,7 @@ class Submission extends Model
                 'updated_at' => now(),
             ]);
         $this->refresh();
+
+        SubmissionStatusChanged::dispatch($this, $oldStatus, 'rejected', $userId);
     }
 }

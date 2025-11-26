@@ -26,6 +26,7 @@ class UserRequest extends FormRequest
                 Rule::unique('users')->ignore($userId),
             ],
             'institution_id' => ['required', 'exists:institutions,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
             'is_active' => ['boolean'],
             'role' => ['required', 'string', Rule::in(['admin', 'enumerator', 'viewer'])],
         ];

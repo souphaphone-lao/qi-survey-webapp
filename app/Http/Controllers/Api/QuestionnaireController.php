@@ -18,6 +18,11 @@ class QuestionnaireController extends Controller
 
         $query = Questionnaire::with(['createdBy']);
 
+        // Enumerators can only see active questionnaires (unless explicitly filtering)
+        if (!$request->has('is_active') && auth()->user()->hasRole('enumerator')) {
+            $query->where('is_active', true);
+        }
+
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -82,13 +87,19 @@ class QuestionnaireController extends Controller
     {
         $this->authorize('update', $questionnaire);
 
-        $questionnaire->update([
+        $updateData = [
             'title' => $request->title,
             'description' => $request->description,
             'surveyjs_json' => $request->surveyjs_json,
-            'is_active' => $request->is_active,
             'updated_by' => auth()->id(),
-        ]);
+        ];
+
+        // Only update is_active if it's present in the request
+        if ($request->has('is_active')) {
+            $updateData['is_active'] = $request->is_active;
+        }
+
+        $questionnaire->update($updateData);
 
         $questionnaire->load(['createdBy', 'updatedBy']);
 

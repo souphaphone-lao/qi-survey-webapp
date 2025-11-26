@@ -27,6 +27,12 @@ class RoleAndPermissionSeeder extends Seeder
             'institutions.update',
             'institutions.delete',
 
+            // Department permissions
+            'departments.view',
+            'departments.create',
+            'departments.update',
+            'departments.delete',
+
             // Questionnaire permissions
             'questionnaires.view',
             'questionnaires.create',
@@ -55,6 +61,7 @@ class RoleAndPermissionSeeder extends Seeder
         $enumeratorRole = Role::firstOrCreate(['name' => 'enumerator']);
         $enumeratorRole->syncPermissions([
             'institutions.view',
+            'departments.view',
             'questionnaires.view',
             'submissions.view',
             'submissions.create',
@@ -66,6 +73,7 @@ class RoleAndPermissionSeeder extends Seeder
         $viewerRole = Role::firstOrCreate(['name' => 'viewer']);
         $viewerRole->syncPermissions([
             'institutions.view',
+            'departments.view',
             'questionnaires.view',
             'submissions.view',
             'dashboard.view',

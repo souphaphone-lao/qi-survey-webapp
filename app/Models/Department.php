@@ -8,16 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Questionnaire extends Model
+class Department extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'name',
         'code',
-        'version',
-        'title',
+        'institution_id',
         'description',
-        'surveyjs_json',
         'is_active',
         'created_by',
         'updated_by',
@@ -26,15 +25,18 @@ class Questionnaire extends Model
     protected function casts(): array
     {
         return [
-            'surveyjs_json' => 'array',
             'is_active' => 'boolean',
-            'version' => 'integer',
         ];
     }
 
-    public function submissions(): HasMany
+    public function institution(): BelongsTo
     {
-        return $this->hasMany(Submission::class);
+        return $this->belongsTo(Institution::class);
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
     }
 
     public function questionPermissions(): HasMany
@@ -50,26 +52,5 @@ class Questionnaire extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
-    public function scopeByCode($query, string $code)
-    {
-        return $query->where('code', $code);
-    }
-
-    public function duplicate(): self
-    {
-        $latestVersion = static::where('code', $this->code)->max('version');
-
-        $newQuestionnaire = $this->replicate();
-        $newQuestionnaire->version = $latestVersion + 1;
-        $newQuestionnaire->save();
-
-        return $newQuestionnaire;
     }
 }

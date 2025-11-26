@@ -2,9 +2,12 @@ import axios from 'axios';
 import type {
     AuthResponse,
     DashboardStats,
+    Department,
     Institution,
     LoginCredentials,
+    Notification,
     PaginatedResponse,
+    QuestionPermission,
     Questionnaire,
     Submission,
     User,
@@ -228,6 +231,88 @@ export const submissionsApi = {
             rejection_comments,
         });
         return response.data.data;
+    },
+};
+
+// Departments API
+export const departmentsApi = {
+    list: async (params?: Record<string, unknown>): Promise<PaginatedResponse<Department>> => {
+        const response = await api.get<PaginatedResponse<Department>>('/departments', { params });
+        return response.data;
+    },
+
+    getAll: async (params?: { institution_id?: number }): Promise<Department[]> => {
+        const response = await api.get<Department[]>('/departments/list', { params });
+        return response.data;
+    },
+
+    get: async (id: number): Promise<Department> => {
+        const response = await api.get<{ data: Department }>(`/departments/${id}`);
+        return response.data.data;
+    },
+
+    create: async (data: Partial<Department>): Promise<Department> => {
+        const response = await api.post<{ data: Department }>('/departments', data);
+        return response.data.data;
+    },
+
+    update: async (id: number, data: Partial<Department>): Promise<Department> => {
+        const response = await api.put<{ data: Department }>(`/departments/${id}`, data);
+        return response.data.data;
+    },
+
+    delete: async (id: number): Promise<void> => {
+        await api.delete(`/departments/${id}`);
+    },
+};
+
+// Question Permissions API
+export const questionPermissionsApi = {
+    list: async (params?: Record<string, unknown>): Promise<PaginatedResponse<QuestionPermission>> => {
+        const response = await api.get<PaginatedResponse<QuestionPermission>>('/question-permissions', { params });
+        return response.data;
+    },
+
+    byQuestionnaire: async (questionnaireId: number): Promise<QuestionPermission[]> => {
+        const response = await api.get<QuestionPermission[]>(`/questionnaires/${questionnaireId}/permissions`);
+        return response.data;
+    },
+
+    create: async (data: Partial<QuestionPermission>): Promise<QuestionPermission> => {
+        const response = await api.post<{ data: QuestionPermission }>('/question-permissions', data);
+        return response.data.data;
+    },
+
+    bulkStore: async (permissions: Partial<QuestionPermission>[]): Promise<{ created_count: number; updated_count: number }> => {
+        const response = await api.post<{ created_count: number; updated_count: number }>('/question-permissions/bulk', {
+            permissions,
+        });
+        return response.data;
+    },
+
+    delete: async (id: number): Promise<void> => {
+        await api.delete(`/question-permissions/${id}`);
+    },
+};
+
+// Notifications API
+export const notificationsApi = {
+    list: async (params?: { unread_only?: boolean; per_page?: number }): Promise<PaginatedResponse<Notification>> => {
+        const response = await api.get<PaginatedResponse<Notification>>('/notifications', { params });
+        return response.data;
+    },
+
+    unreadCount: async (): Promise<{ count: number }> => {
+        const response = await api.get<{ count: number }>('/notifications/unread-count');
+        return response.data;
+    },
+
+    markAsRead: async (id: string): Promise<void> => {
+        await api.put(`/notifications/${id}/read`);
+    },
+
+    markAllAsRead: async (): Promise<void> => {
+        await api.put('/notifications/mark-all-read');
     },
 };
 

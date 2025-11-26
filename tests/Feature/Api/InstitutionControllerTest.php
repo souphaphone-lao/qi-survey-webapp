@@ -144,6 +144,8 @@ test('non-admin cannot update institution', function () {
     $response = $this->withHeader('Authorization', "Bearer {$token}")
         ->putJson("/api/institutions/{$institution->id}", [
             'name' => 'Updated',
+            'code' => $institution->code,
+            'level' => $institution->level,
         ]);
 
     $response->assertForbidden();
@@ -241,7 +243,8 @@ test('create institution validates valid level', function () {
 });
 
 test('can filter institutions by level', function () {
-    $institution = Institution::factory()->create();
+    // Create a non-central institution for the user
+    $institution = Institution::factory()->province()->create();
     $user = User::factory()->create(['institution_id' => $institution->id]);
     $user->assignRole('viewer');
 

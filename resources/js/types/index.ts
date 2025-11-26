@@ -4,6 +4,8 @@ export interface User {
     email: string;
     institution_id: number | null;
     institution?: Institution;
+    department_id?: number | null;
+    department?: Department | null;
     is_active: boolean;
     roles: string[];
     permissions?: string[];
@@ -23,6 +25,35 @@ export interface Institution {
     is_active: boolean;
     created_by?: { id: number; name: string };
     updated_by?: { id: number; name: string } | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Department {
+    id: number;
+    name: string;
+    code: string;
+    institution_id: number;
+    institution?: { id: number; name: string; code: string; level: string };
+    description: string | null;
+    is_active: boolean;
+    users_count?: number;
+    created_by?: { id: number; name: string };
+    updated_by?: { id: number; name: string } | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface QuestionPermission {
+    id: number;
+    questionnaire_id: number;
+    questionnaire?: { id: number; title: string; code: string };
+    question_name: string;
+    institution_id: number;
+    institution?: { id: number; name: string; code: string };
+    department_id: number;
+    department?: { id: number; name: string; code: string };
+    permission_type: 'edit' | 'view';
     created_at: string;
     updated_at: string;
 }
@@ -89,6 +120,7 @@ export interface Submission {
     approved_by?: { id: number; name: string } | null;
     rejected_by?: { id: number; name: string } | null;
     can_be_edited: boolean;
+    question_permissions?: Record<string, boolean>;
     created_at: string;
     updated_at: string;
 }
@@ -156,4 +188,22 @@ export interface LoginCredentials {
 export interface AuthResponse {
     user: User;
     token: string;
+}
+
+export interface Notification {
+    id: string;
+    type: string;
+    notifiable_type: string;
+    notifiable_id: number;
+    data: {
+        type: 'submission_created' | 'submission_submitted' | 'submission_approved' | 'submission_rejected';
+        submission_id: number;
+        questionnaire_title: string;
+        institution_name: string;
+        url: string;
+        rejection_comments?: string;
+    };
+    read_at: string | null;
+    created_at: string;
+    updated_at: string;
 }

@@ -48,6 +48,7 @@ class SubmissionResource extends JsonResource
                 'name' => $this->rejectedBy->name,
             ] : null),
             'can_be_edited' => $this->canBeEdited(),
+            'question_permissions' => $this->when(isset($this->question_permissions), $this->question_permissions),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString(),
         ];

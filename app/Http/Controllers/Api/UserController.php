@@ -16,7 +16,7 @@ class UserController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $this->authorize('viewAny', User::class);
-        $query = User::with(['institution', 'roles']);
+        $query = User::with(['institution', 'department', 'roles']);
 
         if ($request->has('search')) {
             $search = $request->search;
@@ -28,6 +28,10 @@ class UserController extends Controller
 
         if ($request->has('institution_id')) {
             $query->where('institution_id', $request->institution_id);
+        }
+
+        if ($request->has('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
         if ($request->has('role')) {
@@ -56,6 +60,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'institution_id' => $request->institution_id,
+            'department_id' => $request->department_id,
             'is_active' => $request->is_active ?? true,
             'created_by' => auth()->id(),
         ]);
@@ -64,7 +69,7 @@ class UserController extends Controller
             $user->assignRole($request->role);
         }
 
-        $user->load(['institution', 'roles']);
+        $user->load(['institution', 'department', 'roles']);
 
         return response()->json([
             'message' => 'User created successfully',
@@ -76,7 +81,7 @@ class UserController extends Controller
     {
         $this->authorize('view', $user);
 
-        $user->load(['institution', 'roles']);
+        $user->load(['institution', 'department', 'roles']);
 
         return new UserResource($user);
     }
@@ -89,6 +94,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'institution_id' => $request->institution_id,
+            'department_id' => $request->department_id,
             'is_active' => $request->has('is_active') ? $request->boolean('is_active') : $user->is_active,
             'updated_by' => auth()->id(),
         ];
@@ -103,7 +109,7 @@ class UserController extends Controller
             $user->syncRoles([$request->role]);
         }
 
-        $user->load(['institution', 'roles']);
+        $user->load(['institution', 'department', 'roles']);
 
         return response()->json([
             'message' => 'User updated successfully',

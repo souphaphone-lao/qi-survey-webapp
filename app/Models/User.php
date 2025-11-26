@@ -21,6 +21,8 @@ class User extends Authenticatable
         'email',
         'password',
         'institution_id',
+        'department_id',
+        'notification_preferences',
         'is_active',
         'failed_login_attempts',
         'locked_until',
@@ -39,6 +41,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notification_preferences' => 'array',
             'is_active' => 'boolean',
             'locked_until' => 'datetime',
             'last_login_at' => 'datetime',
@@ -48,6 +51,11 @@ class User extends Authenticatable
     public function institution(): BelongsTo
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
     }
 
     public function submissions(): HasMany
@@ -90,5 +98,31 @@ class User extends Authenticatable
                 'updated_at' => now(),
             ]);
         $this->refresh();
+    }
+
+    public function wantsEmailNotification(string $event): bool
+    {
+        $prefs = $this->notification_preferences ?? self::defaultNotificationPreferences();
+        return ($prefs['email_enabled'] ?? true) && ($prefs['events'][$event] ?? true);
+    }
+
+    public function wantsInAppNotification(string $event): bool
+    {
+        $prefs = $this->notification_preferences ?? self::defaultNotificationPreferences();
+        return ($prefs['in_app_enabled'] ?? true) && ($prefs['events'][$event] ?? true);
+    }
+
+    public static function defaultNotificationPreferences(): array
+    {
+        return [
+            'email_enabled' => true,
+            'in_app_enabled' => true,
+            'events' => [
+                'submission_created' => true,
+                'submission_submitted' => true,
+                'submission_approved' => true,
+                'submission_rejected' => true,
+            ],
+        ];
     }
 }

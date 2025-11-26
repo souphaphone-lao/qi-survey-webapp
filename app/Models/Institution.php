@@ -44,6 +44,11 @@ class Institution extends Model
         return $this->hasMany(User::class);
     }
 
+    public function departments(): HasMany
+    {
+        return $this->hasMany(Department::class);
+    }
+
     public function submissions(): HasMany
     {
         return $this->hasMany(Submission::class);

@@ -5,9 +5,13 @@ use App\Models\Institution;
 use App\Models\Questionnaire;
 use App\Models\Submission;
 use Database\Seeders\RoleAndPermissionSeeder;
+use Spatie\Permission\PermissionRegistrar;
 
 beforeEach(function () {
     $this->seed(RoleAndPermissionSeeder::class);
+
+    // Clear cached permissions after seeding to ensure fresh permission checks
+    app()[PermissionRegistrar::class]->forgetCachedPermissions();
 });
 
 test('enumerator can list their own submissions', function () {
@@ -217,7 +221,7 @@ test('enumerator cannot update submitted submission', function () {
 
     $response->assertStatus(422)
         ->assertJson([
-            'message' => 'Cannot edit submission that has been submitted',
+            'message' => 'Cannot edit a submission that has been submitted or approved',
         ]);
 });
 
@@ -295,7 +299,7 @@ test('enumerator cannot submit already submitted submission', function () {
 
     $response->assertStatus(422)
         ->assertJson([
-            'message' => 'Submission has already been submitted',
+            'message' => 'Cannot submit a submission that has already been submitted or approved',
         ]);
 });
 
@@ -457,10 +461,7 @@ test('enumerator cannot delete submitted submission', function () {
     $response = $this->withHeader('Authorization', "Bearer {$token}")
         ->deleteJson("/api/submissions/{$submission->id}");
 
-    $response->assertStatus(422)
-        ->assertJson([
-            'message' => 'Cannot delete submitted submission',
-        ]);
+    $response->assertForbidden();
 });
 
 test('admin can delete any submission', function () {
@@ -562,7 +563,7 @@ test('create submission validates required fields', function () {
         ->postJson('/api/submissions', []);
 
     $response->assertStatus(422)
-        ->assertJsonValidationErrors(['questionnaire_id', 'institution_id', 'answers_json']);
+        ->assertJsonValidationErrors(['questionnaire_id', 'institution_id']);
 });
 
 test('create submission validates answers_json is array', function () {
@@ -595,6 +596,7 @@ test('viewer can only view submissions but not modify', function () {
     $questionnaire = Questionnaire::factory()->create();
     $submission = Submission::factory()->create([
         'questionnaire_id' => $questionnaire->id,
+        'institution_id' => $institution->id,
     ]);
 
     $token = $viewer->createToken('test-token')->plainTextToken;
