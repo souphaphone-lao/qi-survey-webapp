@@ -297,10 +297,8 @@ test('enumerator cannot submit already submitted submission', function () {
     $response = $this->withHeader('Authorization', "Bearer {$token}")
         ->postJson("/api/submissions/{$submission->id}/submit");
 
-    $response->assertStatus(422)
-        ->assertJson([
-            'message' => 'Cannot submit a submission that has already been submitted or approved',
-        ]);
+    // Authorization check happens first - returns 403 because submission is not draft
+    $response->assertStatus(403);
 });
 
 test('admin can approve submitted submission', function () {

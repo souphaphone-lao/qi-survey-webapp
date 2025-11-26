@@ -67,13 +67,40 @@ class SubmissionPolicy
         return false;
     }
 
+    public function submit(User $user, Submission $submission): bool
+    {
+        return $submission->isDraft()
+            && $submission->created_by === $user->id;
+    }
+
     public function approve(User $user, Submission $submission): bool
     {
-        return $user->hasPermissionTo('submissions.approve');
+        // Must be submitted
+        if (!$submission->isSubmitted()) {
+            return false;
+        }
+
+        // Admin can approve all
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        // Check if user has approval permission
+        if (!$user->hasPermissionTo('submissions.approve')) {
+            return false;
+        }
+
+        // Institution admin can approve if submission is from child institution
+        if (!$user->institution_id) {
+            return false;
+        }
+
+        $submissionInstitution = $submission->institution;
+        return $submissionInstitution->isDescendantOf($user->institution);
     }
 
     public function reject(User $user, Submission $submission): bool
     {
-        return $user->hasPermissionTo('submissions.approve');
+        return $this->approve($user, $submission);
     }
 }

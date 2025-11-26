@@ -1,481 +1,785 @@
-# Enumerator Guide
+# QI Survey Web Application - Enumerator Guide
 
-This guide is for enumerators who collect survey data by filling out questionnaires and submitting them for review.
+**Version:** 1.0
+**Last Updated:** November 26, 2025
+**Audience:** Data Collectors, Enumerators, Field Staff
+
+---
 
 ## Table of Contents
 
-- [Getting Started](#getting-started)
-- [Understanding Your Role](#understanding-your-role)
-- [Navigating the System](#navigating-the-system)
-- [Filling Out Questionnaires](#filling-out-questionnaires)
-- [Managing Your Submissions](#managing-your-submissions)
-- [Working with Drafts](#working-with-drafts)
-- [Handling Rejections](#handling-rejections)
-- [Tips and Best Practices](#tips-and-best-practices)
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+3. [Your Dashboard](#your-dashboard)
+4. [Creating Submissions](#creating-submissions)
+5. [Working with Surveys](#working-with-surveys)
+6. [Editing and Saving](#editing-and-saving)
+7. [Submitting for Approval](#submitting-for-approval)
+8. [Handling Rejections](#handling-rejections)
+9. [Notifications](#notifications)
+10. [Tips and Best Practices](#tips-and-best-practices)
+11. [Troubleshooting](#troubleshooting)
+
+---
+
+## Introduction
+
+Welcome to the QI Survey Web Application! This guide will help you collect and submit survey data efficiently. As an enumerator, you are responsible for creating accurate survey submissions and responding to feedback from administrators.
+
+### Your Role
+
+As an **Enumerator**, you can:
+
+✅ View active questionnaires assigned to your institution
+✅ Create new survey submissions (drafts)
+✅ Edit and save your draft submissions
+✅ Submit completed surveys for approval
+✅ View feedback on rejected submissions
+✅ Edit and resubmit rejected submissions
+✅ View your own submission history
+✅ Receive notifications about approval status
+
+### What You Cannot Do
+
+❌ View other enumerators' submissions
+❌ Approve or reject submissions
+❌ Create or modify questionnaires
+❌ Manage users or institutions
+❌ Edit approved submissions
+
+---
 
 ## Getting Started
 
 ### Logging In
 
-1. Navigate to your application URL (provided by your administrator)
-2. Enter your email and password
-3. Click **Login**
+1. Open your web browser
+2. Navigate to your organization's survey system URL (e.g., `https://survey.yourorganization.org`)
+3. Enter your login credentials:
+   - **Email:** Your assigned email address
+   - **Password:** Your password
+4. Click **Login** button
 
-If you have trouble logging in:
-- Verify you are using the correct email address
-- Check that Caps Lock is off
-- If you've failed to log in 5 times, your account will be locked for 15 minutes
-- Contact your administrator if you've forgotten your password
+**First Time Login:**
+- If this is your first time logging in, you should change your password immediately
+- Click your name in the top-right corner → **Profile** → **Change Password**
 
-### First Login
+**Account Locked?**
+- After 5 failed login attempts, your account will be locked for 15 minutes
+- Wait 15 minutes and try again
+- Contact your administrator if you forgot your password
 
-After your first login:
-1. Review your profile information
-2. Change your password if using a temporary one
-3. Familiarize yourself with the dashboard
-4. Review available questionnaires
+### Understanding the Interface
 
-### Changing Your Password
+After logging in, you'll see:
 
-1. Click on your name/profile in the top navigation
-2. Select "Change Password"
-3. Enter your current password
-4. Enter your new password (at least 8 characters)
-5. Confirm your new password
-6. Click **Update Password**
+**Top Navigation Bar:**
+- **QI Survey System** logo (click to go to dashboard)
+- **Dashboard** - Your overview page
+- **Questionnaires** - View available surveys
+- **Submissions** - Manage your submissions
+- **Notifications** 🔔 - Bell icon with alerts
+- **Your Name** - Click for profile/logout
 
-## Understanding Your Role
+**Main Content Area:**
+- Displays pages, forms, and data tables
+- Changes based on which section you're viewing
 
-As an **Enumerator**, you can:
+---
 
-- View all active questionnaires
-- Create new submissions
-- Save work as drafts
-- Edit your own draft submissions
-- Submit completed forms for review
-- Edit and resubmit rejected submissions
-- View your own submissions and their status
-- View dashboard statistics for your institution
+## Your Dashboard
 
-You **cannot**:
+The dashboard shows your work summary at a glance.
 
-- Create or edit questionnaires
-- Approve or reject submissions
-- View submissions created by other enumerators
-- Manage users or institutions
-- Access admin functions
+### Dashboard Widgets
 
-## Navigating the System
+**My Submissions:**
+- Total number of submissions you've created
+- Quick link to view all your submissions
 
-### Dashboard
+**Pending Drafts:**
+- Count of incomplete drafts
+- Shows submissions you haven't submitted yet
+- Click to continue working on drafts
 
-Your dashboard shows:
-- Number of your draft submissions
-- Number of submissions pending review
-- Number of approved submissions
-- Number of rejected submissions (that need your attention)
-- Recent activity
+**Submitted (Pending Approval):**
+- Submissions waiting for admin review
+- Cannot edit these until approved or rejected
 
-### Main Menu
+**Approved Submissions:**
+- Successfully approved submissions
+- These are finalized and included in reports
 
-- **Dashboard**: Overview of your work
-- **Questionnaires**: List of available surveys
-- **Submissions**: Your submissions and their status
+**Rejected Submissions:**
+- Submissions returned for corrections
+- Red notification badge
+- Click to view and fix issues
 
-### Submission Status Indicators
+### Recent Activity
 
-- **Draft** (Gray): Work in progress, not yet submitted
-- **Submitted** (Blue): Sent for review, awaiting admin decision
-- **Approved** (Green): Accepted by admin, finalized
-- **Rejected** (Red): Returned for corrections, you can edit and resubmit
+Shows your latest submissions with:
+- Questionnaire name
+- Submission date
+- Current status (Draft, Submitted, Approved, Rejected)
 
-## Filling Out Questionnaires
+---
+
+## Creating Submissions
+
+### Viewing Available Questionnaires
+
+1. Click **Questionnaires** in the navigation menu
+2. View list of active questionnaires:
+   - Questionnaire title
+   - Description
+   - Version number
+   - **Create Submission** button
+
+**Note:** You only see questionnaires that are:
+- Currently active (published)
+- Assigned to your institution
 
 ### Starting a New Submission
 
-1. Navigate to **Questionnaires**
-2. Browse the list of available questionnaires
-3. Click **Fill Out** on the questionnaire you want to complete
-4. The survey form will open
+1. Click **Questionnaires** in the navigation menu
+2. Find the questionnaire you need to complete
+3. Click **Create Submission** button
+4. The survey form opens
+
+**What Happens:**
+- A new draft submission is created
+- The form displays all survey questions
+- You can start entering data immediately
+- Your work is NOT visible to administrators until you submit
+
+---
+
+## Working with Surveys
 
 ### Understanding the Survey Form
 
-The survey forms are built with SurveyJS and include:
+**Form Layout:**
+- Questions appear on one or multiple pages
+- Required fields are marked with an asterisk (*) or "Required"
+- Optional fields can be left blank
+- Navigation buttons at bottom (Previous, Next, Save Draft, Submit)
 
-- **Pages**: Surveys may have multiple pages (use Next/Previous buttons)
-- **Required fields**: Marked with a red asterisk (*)
-- **Question types**:
-  - Text inputs: Free text entry
-  - Numbers: Numeric values only
-  - Dropdowns: Select one option
-  - Checkboxes: Select multiple options
-  - Radio buttons: Select one option from several
-  - Date pickers: Select dates
-  - Text areas: Longer text responses
+### Question Types
 
-### Required vs Optional Fields
+You may encounter various question types:
 
-- **Required fields** must be filled before you can submit
-- The system will show an error if you try to save/submit without completing required fields
-- Optional fields can be left blank if not applicable
+**Text Input:**
+- Single line: For short answers (e.g., name, ID number)
+- Multi-line: For longer responses (e.g., comments, descriptions)
+- Type your answer directly
 
-### Validation Rules
+**Multiple Choice:**
+- Radio buttons: Select ONE option (e.g., Yes/No, Male/Female)
+- Checkboxes: Select MULTIPLE options (e.g., symptoms, services)
+- Click to select/deselect
 
-Some fields have validation rules:
-- **Email fields**: Must be valid email format
-- **Number fields**: Must be numeric
-- **Date fields**: Must be valid dates
-- **Min/Max values**: Numbers must be within specified range
-- **Pattern matching**: Text must match a specific format
+**Dropdown:**
+- Click the dropdown to see all options
+- Select one option from the list
+- Search-enabled dropdowns: Type to filter options
 
-If you enter invalid data, the form will show an error message explaining what's wrong.
+**Number Input:**
+- Enter numeric values only
+- May have minimum/maximum limits
+- Examples: age, count, percentage
 
-### Conditional Logic
+**Date/Time:**
+- Click the calendar icon to select date
+- Use date picker or type in format: DD/MM/YYYY
+- Time fields use 24-hour format
 
-Some questions may appear or hide based on your previous answers:
-- Answer truthfully and completely
-- If a question disappears, it means it's not applicable based on your previous answer
-- If a new question appears, fill it out as required
+**Rating Scales:**
+- Click stars, numbers, or buttons to rate
+- Usually 1-5 or 1-10 scale
 
-### Auto-Save
+**File Upload:**
+- Click **Choose File** button
+- Select file from your device
+- Supported formats depend on question settings
 
-The system does not auto-save. You must manually save your work using the **Save Draft** button.
+### Read-Only Questions (🔒)
 
-## Managing Your Submissions
+Some questions may appear with a **lock icon (🔒)** and grayed out:
 
-### Saving as Draft
+**What This Means:**
+- Question is assigned to a different department
+- You can VIEW the field but cannot EDIT it
+- Someone from the authorized department must fill this field
 
-To save your work without submitting:
+**Example:**
+```
+Patient Financial Information 🔒
+Treatment Cost: __________ (grayed out, locked)
+"You do not have permission to edit this question"
+```
 
-1. Fill out the questionnaire (as much as you can)
-2. Click **Save Draft** at the bottom of the form
-3. You'll be redirected to your submissions list
-4. The submission status will be "Draft"
+**What To Do:**
+- Leave locked fields empty
+- Continue with questions you CAN edit
+- Relevant department staff will complete locked questions
 
-Benefits of saving drafts:
-- Continue work later
-- Prevent data loss
-- Complete complex surveys over multiple sessions
-- Gather required information before submitting
+### Multi-Page Surveys
 
-### Editing a Draft
+**Navigating Pages:**
+- Use **Next** button to go to next page
+- Use **Previous** button to go back
+- Progress indicator shows current page (e.g., "Page 2 of 5")
 
-To continue working on a draft:
+**Page Validation:**
+- Must complete required fields before moving to next page
+- Error messages appear for invalid or missing data
+- Fix errors before proceeding
 
-1. Navigate to **Submissions**
-2. Filter by **Status: Draft** (optional)
-3. Find your draft submission
-4. Click **Edit**
-5. Continue filling out the form
-6. Click **Save Draft** again or **Submit** when complete
+**Tip:** Save your work frequently when working on long surveys!
 
-### Submitting for Review
+---
 
-When your questionnaire is complete and accurate:
+## Editing and Saving
 
-1. Open the draft submission (or fill out a new questionnaire)
-2. Review all your answers carefully
-3. Ensure all required fields are filled
-4. Click **Submit for Review**
-5. Confirm the submission
+### Saving Your Work as Draft
 
-What happens after submission:
-- Status changes to "Submitted"
-- You can no longer edit it
-- An administrator will review it
-- You'll be notified of approval or rejection
+**Save Draft Button:**
+- Located at the bottom of the form
+- Click to save your current progress
+- Does NOT submit for approval
+- You can return later to continue
 
-### Pre-Submission Checklist
+**When to Save Draft:**
+✅ Taking a break from data entry
+✅ Need to verify information before completing
+✅ Survey is long and you want to work in stages
+✅ Internet connection is unstable
 
-Before clicking Submit:
-- [ ] All required fields are completed
-- [ ] Numbers and dates are accurate
-- [ ] Text responses are clear and complete
-- [ ] No typos or obvious errors
-- [ ] Information is up to date
-- [ ] You have verified data from source documents
+**What Happens:**
+- All entered data is saved
+- Submission status remains "Draft"
+- Submission appears in your **Submissions** list
+- Only YOU can see and edit it
 
-## Working with Drafts
+### Returning to a Draft
 
-### When to Use Drafts
+1. Click **Submissions** in the navigation menu
+2. Look for submissions with **Draft** status
+3. Click **Edit** button next to the draft
+4. Continue entering data where you left off
+5. Save or submit when ready
 
-Use drafts when:
-- You need to gather more information
-- You're interrupted and need to continue later
-- The survey is long and requires multiple sessions
-- You want to verify data before final submission
-- You need supervisor review before submitting
+### Auto-Save Feature
 
-### Managing Multiple Drafts
+**Important:** The system does NOT auto-save.
+- You must manually click **Save Draft** to save your work
+- If you close the browser without saving, data may be lost
+- Save frequently to prevent data loss!
 
-Tips for organizing drafts:
-- Use descriptive titles if available
-- Note the questionnaire name
-- Track which drafts are priority
-- Complete oldest drafts first
-- Don't accumulate too many drafts
-- Set reminders to complete drafts
+---
 
-### Draft Limitations
+## Submitting for Approval
 
-- Drafts are only visible to you and administrators
-- Drafts don't appear in reports
-- Old drafts may become invalid if the questionnaire is updated
-- No notifications are sent for drafts
+### When to Submit
+
+Submit when:
+✅ All required fields are completed
+✅ All data has been verified for accuracy
+✅ You've reviewed the entire submission
+✅ No locked fields need completion by your department
+
+**Do NOT Submit if:**
+❌ Required fields are incomplete
+❌ Data contains obvious errors
+❌ You're unsure about any answers
+❌ Information needs verification
+
+### How to Submit
+
+1. Open your draft submission (if not already open)
+2. Review all pages carefully
+3. Verify all data is correct
+4. Click **Submit** button at the bottom
+5. Confirm submission in the popup dialog
+6. Click **Submit** to confirm
+
+**What Happens After Submit:**
+- Submission status changes to "Submitted"
+- Form becomes read-only (you cannot edit)
+- Administrators are notified
+- Submission enters review queue
+- You receive notification when reviewed
+
+### Can I Un-Submit?
+
+**No**, once submitted you cannot un-submit or edit.
+
+**What if I made a mistake?**
+- Wait for administrator review
+- Administrator may approve it anyway (if minor)
+- Administrator may reject it with comments
+- If rejected, you can fix and resubmit
+
+---
 
 ## Handling Rejections
 
-### Understanding Rejections
+### Understanding Rejection
 
-An administrator may reject your submission if:
-- Data is incomplete
-- Information is incorrect or inconsistent
-- Required documentation is missing
-- Validation rules are not met
-- Format doesn't match requirements
+When an administrator finds issues with your submission, they may reject it with comments explaining what needs to be corrected.
 
-Rejection is not a criticism - it's quality control to ensure accurate data.
+### Rejection Notification
 
-### When a Submission is Rejected
+You'll be notified via:
+1. **Notification bell** (🔔) - Red badge appears
+2. **Dashboard** - "Rejected Submissions" count increases
+3. **Notification panel** - Click bell to see message
 
-You will see:
-- Status changed to "Rejected" (red)
-- Rejection date and time
-- Administrator's comments explaining what needs correction
-- Option to edit and resubmit
+**Example Notification:**
+```
+🔴 Your submission "Patient Survey Q1" was rejected
+Comments: "Patient age (Q2) appears incorrect - please verify.
+          Treatment cost (Q5) is missing currency denomination."
+30 minutes ago
+```
 
-### Reading Rejection Comments
+### Viewing Rejection Details
 
-Rejection comments tell you what to fix:
-- Read them carefully
-- Take notes if needed
-- Gather correct information before editing
-- Contact the administrator if comments are unclear
+1. Click the notification, OR
+2. Go to **Submissions** → Filter by **Rejected** status
+3. Click **View/Edit** button
+4. Red banner at top shows rejection comments
 
-### Editing and Resubmitting
+**Rejection Banner:**
+```
+⚠️ Submission Rejected
 
-To fix a rejected submission:
+Please address the issues above and resubmit:
+"Patient age (Q2) appears incorrect - please verify.
+Treatment cost (Q5) is missing currency denomination."
+```
 
-1. Navigate to **Submissions**
-2. Filter by **Status: Rejected**
-3. Find the rejected submission
-4. Read the rejection comments carefully
-5. Click **Edit**
-6. Make the required corrections
-   - Look for highlighted fields (if implemented)
-   - Refer to rejection comments
-   - Verify all data
-7. Click **Submit for Review** again
+### Correcting and Resubmitting
 
-The submission will return to "Submitted" status for another review.
+1. Read rejection comments carefully
+2. Click **Edit** button (or form is already editable)
+3. Navigate to the fields mentioned in comments
+4. Make necessary corrections
+5. Review entire submission again
+6. Click **Submit** button when ready
+7. Submission returns to "Submitted" status
 
-### Multiple Rejections
+**Tips for Addressing Rejections:**
+✅ Read ALL rejection comments carefully
+✅ Fix EVERY issue mentioned
+✅ Verify data with source documents
+✅ Double-check other fields for similar errors
+✅ Add clarifying notes if needed
+✅ Review entire form before resubmitting
 
-If your submission is rejected multiple times:
-- Review rejection comments more carefully
-- Verify you understand the requirements
-- Contact your supervisor or the administrator
-- Ask for clarification on specific fields
-- Request training if needed
+**Common Rejection Reasons:**
+- Missing required information
+- Incorrect data format (e.g., date, number)
+- Inconsistent data (e.g., age doesn't match date of birth)
+- Incomplete sections
+- Data doesn't match source documents
+
+---
+
+## Notifications
+
+### Notification Bell 🔔
+
+Located in the top-right corner:
+- **Badge with number** - Shows unread notification count
+- **Click bell** - Opens notification panel
+- **Auto-updates** - Refreshes every 30 seconds
+
+### Types of Notifications
+
+**Submission Approved (Green):**
+```
+🟢 Your submission "Patient Survey Q1" has been approved
+2 hours ago
+```
+- Good news! Your work is complete
+- Submission is finalized
+- Included in reports
+
+**Submission Rejected (Red):**
+```
+🔴 Your submission "Patient Survey Q1" was rejected
+Comments: "Please verify patient age field..."
+30 minutes ago
+```
+- Needs your attention
+- Read comments and fix issues
+- Resubmit when corrected
+
+### Managing Notifications
+
+**View Notification:**
+- Click notification to view submission
+- Automatically marked as read
+- Badge count decreases
+
+**Mark All as Read:**
+- Click "Mark all as read" at bottom of panel
+- Clears all notifications
+- Badge disappears
+
+### Email Notifications
+
+Depending on your system configuration, you may also receive email notifications:
+- Check your registered email address
+- Emails contain same information as in-app notifications
+- Click links in email to go directly to submission
+
+---
 
 ## Tips and Best Practices
 
-### Before Starting a Survey
+### Data Entry Best Practices
 
-1. **Gather materials**: Have all source documents ready
-2. **Understand requirements**: Read questionnaire instructions
-3. **Check your internet**: Ensure stable connection
-4. **Allocate time**: Don't rush through surveys
-5. **Find a quiet space**: Minimize distractions
+✅ **Prepare Before Starting:**
+- Gather all required documents
+- Have patient/participant information ready
+- Review questionnaire requirements
+- Plan your data collection
 
-### While Filling Out Forms
+✅ **During Data Entry:**
+- Save drafts frequently (every 10-15 minutes)
+- Verify data as you type
+- Use consistent formatting (e.g., dates, names)
+- Don't guess - verify uncertain information
+- Take breaks on long surveys to maintain accuracy
 
-1. **Read questions carefully**: Make sure you understand what's being asked
-2. **Answer honestly and accurately**: Don't guess
-3. **Use consistent formats**: Follow examples provided
-4. **Double-check numbers**: Verify calculations and counts
-5. **Save frequently**: Click Save Draft regularly
-6. **Use proper units**: Include units of measurement when specified
+✅ **Before Submitting:**
+- Review all pages carefully
+- Check for typos and errors
+- Verify calculations and totals
+- Ensure all required fields are complete
+- Read your comments/notes for clarity
 
-### Data Quality
+### Time Management
 
-1. **Verify at source**: Check original documents
-2. **Be consistent**: Use the same format throughout
-3. **Don't duplicate**: Each submission should be unique
-4. **Report problems**: Contact admin if questions are unclear
-5. **Ask questions**: Better to ask than submit incorrect data
+✅ **Schedule Data Entry:**
+- Set aside dedicated time for data entry
+- Avoid rushing to meet deadlines
+- Break long surveys into sessions
 
-### Managing Your Time
+✅ **Use Draft Feature:**
+- Save partially completed surveys
+- Return when you have verified information
+- Don't submit incomplete work
 
-1. **Prioritize submitted deadlines**: Check if questionnaires have due dates
-2. **Complete drafts promptly**: Don't let them pile up
-3. **Review rejections quickly**: Fix and resubmit same day if possible
-4. **Plan for complex surveys**: Block out sufficient time
-5. **Avoid last-minute submissions**: Give admins time to review
+✅ **Track Your Work:**
+- Check dashboard regularly
+- Monitor pending drafts
+- Respond to rejections promptly
 
-### Working Offline
+### Data Quality Tips
 
-The current system requires internet connection. Best practices:
-1. Ensure stable connection before starting
-2. Use wired connection if WiFi is unreliable
-3. Save drafts before connection issues
-4. Don't start submissions if connection is unstable
-5. Contact administrator about offline capabilities if needed
+✅ **Accuracy is Priority:**
+- Double-check numbers and dates
+- Verify spelling of names
+- Cross-reference with source documents
+- Ask for clarification if unsure
 
-### Browser Recommendations
+✅ **Be Consistent:**
+- Use same format throughout (e.g., 01/01/2025 not 1-1-25)
+- Follow naming conventions
+- Use standard abbreviations
 
-For best experience:
-- Use modern browsers (Chrome, Firefox, Edge, Safari)
-- Keep browser updated
-- Enable JavaScript
-- Clear cache if experiencing issues
-- Don't use Internet Explorer
+✅ **Avoid Common Errors:**
+- Decimal point mistakes (1.5 vs 15)
+- Date format confusion (DD/MM vs MM/DD)
+- Leaving required fields blank
+- Copy-paste errors from previous submissions
+
+### Communication
+
+✅ **With Administrators:**
+- Respond to rejection comments promptly
+- Ask questions if comments are unclear
+- Report system issues immediately
+- Provide context in your notes if needed
+
+✅ **With Your Team:**
+- Coordinate on shared questionnaires
+- Share lessons learned
+- Help new enumerators
+- Discuss challenging questions
+
+---
 
 ## Troubleshooting
 
-### Cannot Submit Form
+### Cannot See Any Questionnaires
 
-**Error: "Please complete all required fields"**
-- Scroll through entire form
-- Look for red asterisks (*)
-- Check for error messages under fields
-- Ensure conditional questions are answered
+**Problem:** Questionnaires page is empty
 
-**Error: "Validation failed"**
-- Check for red error messages under fields
-- Verify number formats
-- Check date formats
-- Ensure email addresses are valid
+**Solutions:**
+1. Check with administrator - questionnaires may not be activated yet
+2. Verify your institution assignment
+3. Refresh the page
+4. Check your role - you must be enumerator
+5. Contact administrator if issue persists
 
-### Form Not Saving
+---
 
-**Draft not saving:**
-1. Check internet connection
-2. Check browser console (F12) for errors
-3. Try refreshing the page
-4. Log out and log back in
-5. Contact administrator if problem persists
+### Cannot Edit a Submission
 
-### Cannot Edit Submission
+**Problem:** Form fields are grayed out or locked
 
-**"Cannot edit submission" error:**
-- Check submission status
-- Only Draft and Rejected can be edited
-- Submitted and Approved submissions cannot be edited
-- Contact administrator if you need changes to approved submission
+**Solutions:**
 
-### Form Looks Wrong
+**If submission is "Submitted":**
+- This is normal - submitted forms are locked
+- Wait for admin to approve or reject
+- If rejected, you can edit again
 
-**Layout issues:**
-1. Refresh the page (F5)
-2. Clear browser cache
-3. Try a different browser
-4. Check your zoom level (should be 100%)
-5. Report to administrator if issue continues
+**If submission is "Approved":**
+- Approved submissions cannot be edited
+- This is permanent - contact admin if critical error
 
-### Lost Work
+**If specific questions are locked (🔒):**
+- These are department-restricted questions
+- Only authorized department can edit
+- Continue with other questions
 
-**If you lose unsaved work:**
-- Unfortunately, unsaved work cannot be recovered
-- Always click Save Draft regularly
-- Consider keeping notes in a separate document
-- Complete shorter surveys in one session
+---
+
+### Data Not Saving
+
+**Problem:** Clicked Save Draft but data disappeared
+
+**Solutions:**
+1. Check your internet connection
+2. Look for error messages on screen
+3. Try saving again
+4. Check **Submissions** list to see if it saved
+5. Copy your data to notepad as backup
+6. Refresh page and try again
+7. Contact administrator if problem continues
+
+---
+
+### Cannot Submit (Button Disabled)
+
+**Problem:** Submit button is grayed out or doesn't work
+
+**Solutions:**
+1. Check for error messages on page
+2. Ensure all required fields (*) are completed
+3. Scroll through all pages to find missing fields
+4. Check for validation errors (red text)
+5. Try Save Draft first, then Submit
+6. Refresh page and try again
+
+---
+
+### Submission Disappeared
+
+**Problem:** Cannot find your submission in the list
+
+**Solutions:**
+1. Check **Status** filter - may be filtering wrong status
+2. Use search if available
+3. Check if someone else submitted it
+4. Verify you're logged in with correct account
+5. Contact administrator to check database
+
+---
+
+### Locked Out of Account
+
+**Problem:** Cannot log in - account locked message
+
+**Solutions:**
+1. Wait 15 minutes (automatic unlock after 5 failed attempts)
+2. Try again after waiting period
+3. Contact administrator if you forgot password
+4. Verify you're using correct email address
+5. Check Caps Lock is not on
+
+---
+
+### Notification Not Appearing
+
+**Problem:** Submission was reviewed but no notification
+
+**Solutions:**
+1. Click notification bell to refresh
+2. Check **Submissions** page directly
+3. Wait 30 seconds (auto-refresh interval)
+4. Refresh entire page (F5 or Ctrl+R)
+5. Check email for notification (if enabled)
+6. Contact administrator if issue persists
+
+---
+
+### Form Questions Not Displaying
+
+**Problem:** Survey form is blank or questions missing
+
+**Solutions:**
+1. Wait for page to fully load
+2. Refresh the page (F5 or Ctrl+R)
+3. Clear browser cache
+4. Try different browser (Chrome, Firefox, Edge)
+5. Check internet connection
+6. Contact administrator - questionnaire may have errors
+
+---
+
+### Cannot Upload File
+
+**Problem:** File upload button not working
+
+**Solutions:**
+1. Check file size - may be too large
+2. Verify file format is allowed
+3. Try smaller file or different format
+4. Check internet connection
+5. Try different browser
+6. Contact administrator about file requirements
+
+---
+
+## Frequently Asked Questions
+
+**Q: How long do drafts stay saved?**
+A: Drafts remain until you submit or delete them. There's no automatic deletion.
+
+**Q: Can I see other enumerators' submissions?**
+A: No, you only see your own submissions. Administrators can see all submissions.
+
+**Q: What happens if I submit incomplete data?**
+A: Administrator will likely reject it with comments. You'll need to complete and resubmit.
+
+**Q: Can I delete a submission?**
+A: You can delete drafts. Once submitted, approved, or rejected, you cannot delete (contact admin).
+
+**Q: How long does approval take?**
+A: Depends on your organization's workflow. Typically 24-48 hours. Check with your administrator.
+
+**Q: Can I work offline?**
+A: No, the system requires internet connection. Save frequently to prevent data loss.
+
+**Q: What if I disagree with a rejection?**
+A: Make corrections as requested, or add clarifying notes. If still concerned, discuss with administrator.
+
+**Q: Can I print my submission?**
+A: Usually yes - use browser's print function (Ctrl+P). Or ask administrator for export feature.
+
+**Q: What if I made a typo in an approved submission?**
+A: Contact your administrator. Approved submissions cannot be edited by enumerators.
+
+**Q: Who can see locked questions (🔒)?**
+A: Users from the authorized department and administrators can edit locked questions.
+
+---
 
 ## Getting Help
 
-### When to Contact Your Administrator
+**Technical Issues:**
+1. Check this guide's Troubleshooting section
+2. Contact your IT support
+3. Contact system administrator
+4. Provide error messages/screenshots
 
-Contact admin if:
-- You cannot log in
-- You forgot your password
-- A questionnaire has errors or unclear questions
-- You need a submission edited after approval
-- Technical issues prevent you from working
-- You need training or clarification
+**Data Entry Questions:**
+1. Contact your supervisor
+2. Refer to questionnaire instructions
+3. Ask more experienced enumerators
+4. Contact administrator if questionnaire is unclear
 
-### When to Contact Your Supervisor
+**Account Issues:**
+1. Contact system administrator
+2. Provide your email address and institution
+3. Describe the problem clearly
 
-Contact supervisor for:
-- Clarification on data collection procedures
-- Questions about source documents
-- Prioritization of multiple questionnaires
-- Feedback on your submission quality
-- Training requests
+---
 
-### Self-Help Resources
+## Keyboard Shortcuts
 
-Before asking for help:
-1. Re-read this guide
-2. Check FAQ section (if available)
-3. Review rejection comments carefully
-4. Try logging out and back in
-5. Try a different browser
+**Form Navigation:**
+- `Tab` - Move to next field
+- `Shift+Tab` - Move to previous field
+- `Enter` - Confirm selection (dropdowns, buttons)
+- `Space` - Toggle checkboxes
+
+**Browser:**
+- `F5` or `Ctrl+R` - Refresh page
+- `Ctrl+S` - Browser save (does NOT save form - use Save Draft button!)
+
+---
 
 ## Appendix
 
-### Common Field Types
+### Status Meanings
 
-| Field Type | Description | Example |
-|-----------|-------------|---------|
-| Text | Single line text | Name, Code |
-| Number | Numeric values only | 123, 45.6 |
-| Email | Valid email address | user@example.com |
-| Date | Date picker | 2025-01-15 |
-| Dropdown | Select one option | Select from list |
-| Checkbox | Select multiple | Check all that apply |
-| Radio | Select one option | Choose only one |
-| Textarea | Multi-line text | Long descriptions |
+| Status | What It Means | What You Can Do |
+|--------|---------------|-----------------|
+| Draft | Work in progress | Edit, Save, Submit, Delete |
+| Submitted | Awaiting review | View only, Wait for review |
+| Approved | Accepted, finalized | View only |
+| Rejected | Needs corrections | Edit, Fix issues, Resubmit |
 
-### Submission Workflow
+### Common Error Messages
 
-```
-1. Create New → Draft
-              ↓
-2. Save Draft → Draft (you can edit)
-              ↓
-3. Submit → Submitted (waiting for review)
-              ↓
-        ┌─────┴─────┐
-        ↓           ↓
-4a. Approved   4b. Rejected → Edit → Submit (back to step 3)
-    (final)        (you can edit)
-```
+**"This field is required"**
+- Must complete this field before submitting
+- Cannot leave blank
 
-### Keyboard Shortcuts
+**"Invalid format"**
+- Data format is wrong (e.g., date, number)
+- Follow the format shown in placeholder
 
-| Shortcut | Action |
-|----------|--------|
-| Tab | Move to next field |
-| Shift + Tab | Move to previous field |
-| Enter | Submit form (if on submit button) |
-| Ctrl/Cmd + S | Save draft (if implemented) |
-| Esc | Close modal/dialog |
+**"Value must be between X and Y"**
+- Number is outside allowed range
+- Enter value within specified limits
 
-### Status Colors
+**"Account is locked"**
+- Too many failed login attempts
+- Wait 15 minutes and try again
 
-| Status | Color | Action Needed |
-|--------|-------|---------------|
-| Draft | Gray | Continue editing and submit |
-| Submitted | Blue | Wait for admin review |
-| Approved | Green | No action - completed |
-| Rejected | Red | Read comments, edit, resubmit |
+**"Forbidden"**
+- You don't have permission for this action
+- Contact administrator
 
-### Quick Reference
+**"Session expired"**
+- You were logged out due to inactivity
+- Log in again
+- Your draft may be saved
 
-**Starting a new submission:**
-Questionnaires → Choose questionnaire → Fill Out
+---
 
-**Saving work in progress:**
-Fill form → Save Draft (bottom of form)
+## Quick Reference Card
 
-**Submitting for review:**
-Fill form completely → Submit for Review (bottom of form)
+**Login:** Use your email and password
 
-**Editing a draft:**
-Submissions → Find draft → Edit → Make changes → Save Draft or Submit
+**Create Submission:** Questionnaires → Create Submission
 
-**Handling rejection:**
-Submissions → Find rejected → Read comments → Edit → Fix issues → Submit for Review
+**Save Draft:** Click "Save Draft" button frequently
 
-**Viewing your submissions:**
-Submissions → Filter by status if needed → Click to view details
+**Submit:** Click "Submit" when complete and verified
+
+**View Notifications:** Click bell icon (🔔) in top-right
+
+**Edit Rejected:** Submissions → Click "Edit" on rejected item
+
+**View Status:** Dashboard or Submissions page
+
+**Get Help:** Contact your administrator
+
+---
+
+**Document Version:** 1.0
+**Last Updated:** November 26, 2025
+**For Questions:** Contact your supervisor or system administrator
+
+---
+
+**Remember:** Accurate data is the foundation of good decisions. Take your time, verify your work, and don't hesitate to ask for help when you need it!

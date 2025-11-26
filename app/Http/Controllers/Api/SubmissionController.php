@@ -197,7 +197,7 @@ class SubmissionController extends Controller
 
     public function submit(Submission $submission): JsonResponse
     {
-        $this->authorize('update', $submission);
+        $this->authorize('submit', $submission);
 
         if (!$submission->canBeEdited()) {
             return response()->json([
@@ -235,7 +235,7 @@ class SubmissionController extends Controller
 
     public function reject(Request $request, Submission $submission): JsonResponse
     {
-        $this->authorize('approve', $submission);
+        $this->authorize('reject', $submission);
 
         $request->validate([
             'rejection_comments' => 'required|string|max:1000',

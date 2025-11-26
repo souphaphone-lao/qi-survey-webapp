@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import NotificationBell from './NotificationBell';
 
 interface NavItem {
     name: string;
@@ -12,6 +13,7 @@ const navigation: NavItem[] = [
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Users', href: '/users', permission: 'users.view' },
     { name: 'Institutions', href: '/institutions', permission: 'institutions.view' },
+    { name: 'Departments', href: '/departments', permission: 'departments.view' },
     { name: 'Questionnaires', href: '/questionnaires', permission: 'questionnaires.view' },
     { name: 'Submissions', href: '/submissions', permission: 'submissions.view' },
 ];
@@ -61,6 +63,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <div className="hidden sm:ml-6 sm:flex sm:items-center">
                             <div className="relative ml-3">
                                 <div className="flex items-center space-x-4">
+                                    <NotificationBell />
                                     <span className="text-sm text-gray-700">
                                         {user?.name}
                                         {user?.institution && (

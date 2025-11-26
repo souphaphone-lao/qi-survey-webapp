@@ -73,4 +73,62 @@ class Institution extends Model
     {
         return $query->where('level', $level);
     }
+
+    /**
+     * Get all descendants of this institution recursively.
+     */
+    public function descendants(): \Illuminate\Support\Collection
+    {
+        $descendants = collect();
+
+        foreach ($this->children as $child) {
+            $descendants->push($child);
+            $descendants = $descendants->merge($child->descendants());
+        }
+
+        return $descendants;
+    }
+
+    /**
+     * Get all ancestors of this institution up to the root.
+     */
+    public function ancestors(): \Illuminate\Support\Collection
+    {
+        $ancestors = collect();
+
+        $current = $this->parent;
+        while ($current) {
+            $ancestors->push($current);
+            $current = $current->parent;
+        }
+
+        return $ancestors;
+    }
+
+    /**
+     * Check if this institution is a descendant of another institution.
+     */
+    public function isDescendantOf(Institution $institution): bool
+    {
+        return $this->ancestors()->contains('id', $institution->id);
+    }
+
+    /**
+     * Check if this institution is an ancestor of another institution.
+     */
+    public function isAncestorOf(Institution $institution): bool
+    {
+        return $this->descendants()->contains('id', $institution->id);
+    }
+
+    /**
+     * Get viewable institution IDs (self + all descendants).
+     */
+    public function getViewableInstitutionIds(): array
+    {
+        return $this->descendants()
+            ->pluck('id')
+            ->prepend($this->id)
+            ->toArray();
+    }
 }

@@ -72,4 +72,53 @@ class Questionnaire extends Model
 
         return $newQuestionnaire;
     }
+
+    /**
+     * Extract question names from SurveyJS JSON schema.
+     */
+    public function extractQuestionNames(): array
+    {
+        if (empty($this->surveyjs_json)) {
+            return [];
+        }
+
+        $questionNames = [];
+
+        // Parse pages
+        $pages = $this->surveyjs_json['pages'] ?? [];
+        foreach ($pages as $page) {
+            $elements = $page['elements'] ?? [];
+            $questionNames = array_merge(
+                $questionNames,
+                $this->extractQuestionsFromElements($elements)
+            );
+        }
+
+        return array_unique($questionNames);
+    }
+
+    /**
+     * Recursively extract question names from elements (handles panels).
+     */
+    private function extractQuestionsFromElements(array $elements): array
+    {
+        $questionNames = [];
+
+        foreach ($elements as $element) {
+            // Add question name if it exists
+            if (isset($element['name'])) {
+                $questionNames[] = $element['name'];
+            }
+
+            // Handle nested elements (panels, etc.)
+            if (isset($element['elements'])) {
+                $questionNames = array_merge(
+                    $questionNames,
+                    $this->extractQuestionsFromElements($element['elements'])
+                );
+            }
+        }
+
+        return $questionNames;
+    }
 }

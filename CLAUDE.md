@@ -308,9 +308,146 @@ resources/js/
 1. Add TypeScript types in `resources/js/types/`
 2. Add API methods to `services/api.ts`
 3. Create page components in `resources/js/pages/{feature}/`
-4. Add routes to `app.tsx`
+4. **Add routes to `app.tsx`** (see Frontend Integration Checklist below)
 5. Create reusable components in `components/common/` if needed
 6. Write tests in `resources/js/__tests__/`
+
+### Frontend Integration Checklist (CRITICAL)
+
+**⚠️ CRITICAL: A feature is NOT complete until it's accessible via the UI.**
+
+After implementing ANY frontend component, you MUST verify it's accessible by following this checklist:
+
+#### 1. Routes Added to `app.tsx`
+
+- [ ] Import component with lazy loading: `const XYZ = React.lazy(() => import('@/pages/.../XYZ'))`
+- [ ] Add route(s) in `<Routes>`: list, create, edit, view (as needed)
+- [ ] Wrap with `<ProtectedRoute>` and `<React.Suspense fallback={<LoadingFallback />}>`
+- [ ] If component needs URL params, create wrapper function using `useParams()`
+
+#### 2. Navigation Links Added (for main features)
+
+- [ ] Add to `AppLayout.tsx` navigation array with permission check
+- [ ] Format: `{ name: 'Feature', href: '/feature', permission: 'feature.view' }`
+
+#### 3. Action Links Added (for related features)
+
+- [ ] Add action links in list pages (e.g., "Permissions" link in QuestionnaireList)
+- [ ] Check permissions before showing link
+- [ ] Use appropriate colors (indigo=primary, green=create, purple=permissions, red=delete)
+
+#### 4. Build and Verify
+
+- [ ] Run `npm run build` - must complete without errors
+- [ ] Test manually OR use Playwright to verify all routes work
+- [ ] Confirm feature is accessible through navigation/links
+
+#### Examples of What Goes Wrong Without This
+
+- ✗ Departments feature implemented but no menu link → users can't access it
+- ✗ PermissionMatrix component exists but no route → 404 error
+- ✗ SubmissionActions component exists but not imported → duplicate code in other files
+
+#### Quick Verification Commands
+
+```bash
+# Build frontend
+npm run build
+
+# Verify routes exist (search app.tsx)
+grep -n "path=\"/feature\"" resources/js/app.tsx
+
+# Verify navigation (search AppLayout.tsx)
+grep -n "Feature" resources/js/components/layout/AppLayout.tsx
+```
+
+### Feature Completion Checklist (CRITICAL)
+
+**⚠️ CRITICAL: Features are NOT complete until tested, documented, and verified.**
+
+Before moving to the next feature, you MUST complete these steps:
+
+#### 1. Run All Tests
+
+```bash
+# Backend tests (ALWAYS safe - uses SQLite :memory:)
+php artisan test
+
+# Frontend tests
+npm test
+
+# TypeScript checking
+npm run typecheck
+```
+
+- [ ] All backend tests pass (197+ tests)
+- [ ] All frontend tests pass
+- [ ] No TypeScript errors
+- [ ] **DO NOT proceed to next feature if tests fail** - fix them first
+
+#### 2. Export Implementation Summary
+
+After completing a significant feature or phase, export a comprehensive summary:
+
+- [ ] Create markdown file in `doc/` or `doc/plan/` directory
+- [ ] Include: features implemented, files modified, API endpoints added, database changes
+- [ ] Include: testing results (number of tests, all passing)
+- [ ] Include: any breaking changes or migration notes
+- [ ] Format: `YYYY-MM-DD-feature-name-implementation-summary.md`
+
+**Example structure:**
+```markdown
+# Feature Name Implementation Summary
+
+## Date: YYYY-MM-DD
+
+## Features Implemented
+- Feature 1 with details
+- Feature 2 with details
+
+## Backend Changes
+- Models modified: X, Y, Z
+- Controllers added: ABC
+- Migrations: describe schema changes
+- Policies: authorization rules
+
+## Frontend Changes
+- Components: list of new/modified components
+- Routes: new routes added
+- API integrations: endpoints used
+
+## Testing Results
+- Backend: X tests passing
+- Frontend: Y tests passing
+- All tests ✓
+
+## Files Modified
+[List of key files with line references]
+```
+
+#### 3. Update Documentation
+
+After major features, update user-facing and technical documentation:
+
+- [ ] **Admin Guide** (`doc/guides/ADMIN-GUIDE.md`): For administrators managing the system
+- [ ] **Enumerator Guide** (`doc/guides/ENUMERATOR-GUIDE.md`): For end-users entering data
+- [ ] **Setup Guide** (`doc/guides/setup-guide.md`): For developers/deploying the application
+- [ ] **Phase Setup Addendum** (`doc/guides/PHASE-X-SETUP-ADDENDUM.md`): For phase-specific setup notes
+
+**When to update:**
+
+- Admin Guide: When adding features that admins use (user management, questionnaires, permissions, approvals)
+- Enumerator Guide: When changing submission workflow, form behavior, or user-facing features
+- Setup Guide: When adding new dependencies, environment variables, or deployment steps
+- Phase Addendum: When completing a development phase with new database tables, seeders, or configurations
+
+**Update checklist:**
+
+- [ ] Screenshots updated (if UI changed)
+- [ ] New sections added for new features
+- [ ] Troubleshooting section updated with common issues
+- [ ] Examples and use cases included
+- [ ] Version/date updated in document
 
 ### Testing Patterns
 

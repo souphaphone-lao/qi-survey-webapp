@@ -33,6 +33,34 @@ export default function SubmissionForm() {
             if (submission?.answers_json) {
                 model.data = submission.answers_json;
             }
+
+            // Apply read-only permissions for restricted questions
+            if (submission?.question_permissions) {
+                model.onAfterRenderQuestion.add((sender, options) => {
+                    const questionName = options.question.name;
+                    const canEdit = submission.question_permissions?.[questionName] ?? true;
+
+                    if (!canEdit) {
+                        // Make question read-only
+                        options.question.readOnly = true;
+
+                        // Add visual indicator (lock icon)
+                        const titleElement = options.htmlElement.querySelector('.sd-question__title');
+                        if (titleElement && !titleElement.querySelector('.permission-lock-icon')) {
+                            const lockIcon = document.createElement('span');
+                            lockIcon.className = 'permission-lock-icon ml-2 text-gray-400';
+                            lockIcon.innerHTML = '🔒';
+                            lockIcon.title = 'You do not have permission to edit this question';
+                            titleElement.appendChild(lockIcon);
+                        }
+
+                        // Add styling to indicate read-only
+                        options.htmlElement.classList.add('question-readonly');
+                        options.htmlElement.style.opacity = '0.7';
+                    }
+                });
+            }
+
             setSurveyModel(model);
         }
     }, [questionnaire, submission]);
@@ -99,6 +127,36 @@ export default function SubmissionForm() {
             </div>
 
             {error && <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+
+            {/* Rejection Comments Banner */}
+            {submission?.status === 'rejected' && submission.rejection_comments && (
+                <div className="rounded-lg border-l-4 border-red-400 bg-red-50 p-4">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <svg
+                                className="h-5 w-5 text-red-400"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <h3 className="text-sm font-medium text-red-800">Submission Rejected</h3>
+                            <div className="mt-2 text-sm text-red-700">
+                                <p>{submission.rejection_comments}</p>
+                            </div>
+                            <p className="mt-2 text-xs text-red-600">
+                                Please address the issues above and resubmit.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {surveyModel && (
                 <div className="rounded-lg bg-white p-6 shadow">

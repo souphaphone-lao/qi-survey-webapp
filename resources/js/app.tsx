@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
@@ -12,8 +12,11 @@ const UserList = React.lazy(() => import('@/pages/users/UserList'));
 const UserForm = React.lazy(() => import('@/pages/users/UserForm'));
 const InstitutionList = React.lazy(() => import('@/pages/institutions/InstitutionList'));
 const InstitutionForm = React.lazy(() => import('@/pages/institutions/InstitutionForm'));
+const DepartmentList = React.lazy(() => import('@/pages/departments/DepartmentList'));
+const DepartmentForm = React.lazy(() => import('@/pages/departments/DepartmentForm'));
 const QuestionnaireList = React.lazy(() => import('@/pages/questionnaires/QuestionnaireList'));
 const QuestionnaireForm = React.lazy(() => import('@/pages/questionnaires/QuestionnaireForm'));
+const PermissionMatrix = React.lazy(() => import('@/pages/questionnaires/PermissionMatrix'));
 const SubmissionList = React.lazy(() => import('@/pages/submissions/SubmissionList'));
 const SubmissionForm = React.lazy(() => import('@/pages/submissions/SubmissionForm'));
 const SubmissionView = React.lazy(() => import('@/pages/submissions/SubmissionView'));
@@ -69,6 +72,11 @@ function LoadingFallback() {
             <div className="text-gray-500">Loading...</div>
         </div>
     );
+}
+
+function PermissionMatrixWrapper() {
+    const { id } = useParams();
+    return <PermissionMatrix questionnaireId={Number(id)} />;
 }
 
 function App() {
@@ -161,6 +169,38 @@ function App() {
                             }
                         />
 
+                        {/* Departments */}
+                        <Route
+                            path="/departments"
+                            element={
+                                <ProtectedRoute>
+                                    <React.Suspense fallback={<LoadingFallback />}>
+                                        <DepartmentList />
+                                    </React.Suspense>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/departments/create"
+                            element={
+                                <ProtectedRoute>
+                                    <React.Suspense fallback={<LoadingFallback />}>
+                                        <DepartmentForm />
+                                    </React.Suspense>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/departments/:id/edit"
+                            element={
+                                <ProtectedRoute>
+                                    <React.Suspense fallback={<LoadingFallback />}>
+                                        <DepartmentForm />
+                                    </React.Suspense>
+                                </ProtectedRoute>
+                            }
+                        />
+
                         {/* Questionnaires */}
                         <Route
                             path="/questionnaires"
@@ -188,6 +228,16 @@ function App() {
                                 <ProtectedRoute>
                                     <React.Suspense fallback={<LoadingFallback />}>
                                         <QuestionnaireForm />
+                                    </React.Suspense>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/questionnaires/:id/permissions"
+                            element={
+                                <ProtectedRoute>
+                                    <React.Suspense fallback={<LoadingFallback />}>
+                                        <PermissionMatrixWrapper />
                                     </React.Suspense>
                                 </ProtectedRoute>
                             }

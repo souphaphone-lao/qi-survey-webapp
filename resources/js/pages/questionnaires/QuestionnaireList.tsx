@@ -62,6 +62,7 @@ export default function QuestionnaireList() {
                                 <td className="whitespace-nowrap px-6 py-4 text-sm space-x-2">
                                     {hasPermission('submissions.create') && <Link to={`/questionnaires/${q.id}/submissions/create`} className="text-green-600 hover:text-green-900">Fill</Link>}
                                     {hasPermission('questionnaires.update') && <Link to={`/questionnaires/${q.id}/edit`} className="text-indigo-600 hover:text-indigo-900">Edit</Link>}
+                                    {hasPermission('questionnaires.update') && <Link to={`/questionnaires/${q.id}/permissions`} className="text-purple-600 hover:text-purple-900">Permissions</Link>}
                                     {hasPermission('questionnaires.delete') && q.submissions_count === 0 && (
                                         <button
                                             onClick={() => handleDelete(q.id, q.title)}

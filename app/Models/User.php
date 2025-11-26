@@ -125,4 +125,16 @@ class User extends Authenticatable
             ],
         ];
     }
+
+    /**
+     * Get viewable institution IDs for the user (self + descendants).
+     */
+    public function getViewableInstitutionIds(): array
+    {
+        if (!$this->institution_id) {
+            return [];
+        }
+
+        return $this->institution->getViewableInstitutionIds();
+    }
 }

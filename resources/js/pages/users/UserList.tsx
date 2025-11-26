@@ -34,6 +34,7 @@ export default function UserList() {
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email</th>
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Institution</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Department</th>
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Role</th>
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
@@ -45,6 +46,7 @@ export default function UserList() {
                                 <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">{user.name}</td>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{user.email}</td>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{user.institution?.name || '-'}</td>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{user.department?.name || '-'}</td>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{user.roles?.join(', ') || '-'}</td>
                                 <td className="whitespace-nowrap px-6 py-4">
                                     <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
