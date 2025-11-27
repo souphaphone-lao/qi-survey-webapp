@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::put('/user/preferences', [AuthController::class, 'updatePreferences']);
 
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
@@ -48,6 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/questionnaires/{questionnaire}/duplicate', [QuestionnaireController::class, 'duplicate']);
     Route::post('/questionnaires/{questionnaire}/activate', [QuestionnaireController::class, 'activate']);
     Route::post('/questionnaires/{questionnaire}/deactivate', [QuestionnaireController::class, 'deactivate']);
+    Route::get('/questionnaires/{questionnaire}/versions', [QuestionnaireController::class, 'versions']);
+    Route::post('/questionnaires/{questionnaire}/compare', [QuestionnaireController::class, 'compare']);
     Route::apiResource('questionnaires', QuestionnaireController::class);
 
     // Question Permissions

@@ -1,0 +1,17 @@
+{
+  "title": "Dashboard",
+  "overview": "Overview",
+  "statistics": "Statistics",
+  "totalSubmissions": "Total Submissions",
+  "draftSubmissions": "Draft",
+  "submittedSubmissions": "Submitted",
+  "approvedSubmissions": "Approved",
+  "rejectedSubmissions": "Rejected",
+  "recentActivity": "Recent Activity",
+  "submissionsByQuestionnaire": "Submissions by Questionnaire",
+  "submissionsByInstitution": "Submissions by Institution",
+  "submissionsByStatus": "Submissions by Status",
+  "trends": "Trends",
+  "exports": "Exports",
+  "downloadData": "Download Data"
+}

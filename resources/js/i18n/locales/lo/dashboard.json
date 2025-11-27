@@ -1,0 +1,17 @@
+{
+  "title": "ແຜງຄວບຄຸມ",
+  "overview": "ພາບລວມ",
+  "statistics": "ສະຖິຕິ",
+  "totalSubmissions": "ຈຳນວນການສົ່ງທັງໝົດ",
+  "draftSubmissions": "ຮ່າງ",
+  "submittedSubmissions": "ສົ່ງແລ້ວ",
+  "approvedSubmissions": "ອະນຸມັດແລ້ວ",
+  "rejectedSubmissions": "ປະຕິເສດແລ້ວ",
+  "recentActivity": "ກິດຈະກຳຫຼ້າສຸດ",
+  "submissionsByQuestionnaire": "ການສົ່ງແບບສຳຫຼວດ",
+  "submissionsByInstitution": "ການສົ່ງຕາມສະຖາບັນ",
+  "submissionsByStatus": "ການສົ່ງຕາມສະຖານະ",
+  "trends": "ແນວໂນ້ມ",
+  "exports": "ສົ່ງອອກຂໍ້ມູນ",
+  "downloadData": "ດາວໂຫຼດຂໍ້ມູນ"
+}

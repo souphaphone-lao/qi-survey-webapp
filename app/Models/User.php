@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'institution_id',
         'department_id',
+        'locale',
         'notification_preferences',
         'is_active',
         'failed_login_attempts',

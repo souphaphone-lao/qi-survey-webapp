@@ -163,6 +163,7 @@ This installs:
 - SurveyJS
 - TanStack Query
 - Jest testing framework
+- **Phase 6:** i18next, react-i18next, i18next-browser-languagedetector (localization)
 - All required dependencies
 
 **Troubleshooting:**

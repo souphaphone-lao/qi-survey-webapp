@@ -19,6 +19,11 @@ class Questionnaire extends Model
         'description',
         'surveyjs_json',
         'is_active',
+        'parent_version_id',
+        'published_at',
+        'deprecated_at',
+        'version_notes',
+        'breaking_changes',
         'created_by',
         'updated_by',
     ];
@@ -28,7 +33,10 @@ class Questionnaire extends Model
         return [
             'surveyjs_json' => 'array',
             'is_active' => 'boolean',
+            'breaking_changes' => 'boolean',
             'version' => 'integer',
+            'published_at' => 'datetime',
+            'deprecated_at' => 'datetime',
         ];
     }
 
@@ -52,6 +60,16 @@ class Questionnaire extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function parentVersion(): BelongsTo
+    {
+        return $this->belongsTo(Questionnaire::class, 'parent_version_id');
+    }
+
+    public function childVersions(): HasMany
+    {
+        return $this->hasMany(Questionnaire::class, 'parent_version_id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -68,6 +86,12 @@ class Questionnaire extends Model
 
         $newQuestionnaire = $this->replicate();
         $newQuestionnaire->version = $latestVersion + 1;
+        $newQuestionnaire->parent_version_id = $this->id;
+        $newQuestionnaire->is_active = false;
+        $newQuestionnaire->published_at = null;
+        $newQuestionnaire->deprecated_at = null;
+        $newQuestionnaire->version_notes = null;
+        $newQuestionnaire->breaking_changes = false;
         $newQuestionnaire->save();
 
         return $newQuestionnaire;

@@ -1,6 +1,6 @@
 # QI Survey Web Application - Enumerator Guide
 
-**Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Version:** 3.0 (Phase 6 - Localization & Performance)
 **Last Updated:** November 27, 2025
 **Audience:** Data Collectors, Enumerators, Field Staff
 
@@ -17,9 +17,10 @@
 7. [Working Offline](#working-offline)
 8. [Submitting for Approval](#submitting-for-approval)
 9. [Handling Rejections](#handling-rejections)
-10. [Notifications](#notifications)
-11. [Tips and Best Practices](#tips-and-best-practices)
-12. [Troubleshooting](#troubleshooting)
+10. [Language Switching](#language-switching)
+11. [Notifications](#notifications)
+12. [Tips and Best Practices](#tips-and-best-practices)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -639,6 +640,204 @@ Treatment cost (Q5) is missing currency denomination."
 
 ---
 
+## Language Switching
+
+### Overview (Phase 6: Localization)
+
+The application now supports multiple languages! You can switch between English and Lao at any time, and your preference will be saved.
+
+### Changing Your Language
+
+**Step-by-Step:**
+
+1. Look for the **globe icon** (🌐) in the top-right corner of the screen
+   - Located next to the notification bell
+   - Shows current language code (EN or LO)
+
+2. Click the globe icon
+   - Dropdown menu appears
+   - Shows available languages
+
+3. Select your preferred language:
+   - **English** - Full English interface
+   - **ລາວ (Lao)** - Full Lao interface
+
+4. Interface updates immediately
+   - All menus translate
+   - All buttons translate
+   - All labels translate
+   - No page reload needed
+
+**Your Choice is Saved:**
+
+✅ When logged in:
+- Preference saved to your account
+- Works on all devices
+- Persists across sessions
+
+✅ When not logged in:
+- Saved to browser
+- Device-specific
+
+### What Changes When You Switch Language
+
+**User Interface:**
+
+Everything in the interface translates:
+- Navigation menus (Dashboard, Questionnaires, Submissions)
+- Button labels (Save, Cancel, Submit, Delete)
+- Form labels (Name, Email, Status)
+- Status messages (Draft, Submitted, Approved, Rejected)
+- Validation messages ("This field is required")
+- Success messages ("Submission saved successfully")
+- Error messages ("Failed to save")
+- Table headers
+- Modal dialogs
+
+**Dates and Times:**
+
+Dates display in your language format:
+
+**English Format:**
+- Nov 27, 2025
+- Nov 27, 2025, 2:30 PM
+- 2 hours ago
+
+**Lao Format:**
+- 27 ພ.ຈ. 2025
+- 27 ພ.ຈ. 2025, 14:30
+- 2 ຊົ່ວໂມງກ່ອນ
+
+**What Stays the Same:**
+
+These do NOT translate:
+- Your name
+- Institution names
+- Department names
+- Questionnaire titles
+- Question text in surveys
+- Your answers in submissions
+- Comments from administrators
+
+### Using the Application in Lao
+
+**Complete Lao Support:**
+
+When you select Lao language:
+✅ Proper Lao Unicode script
+✅ Correct Lao tone marks
+✅ Lao date formatting
+✅ Lao number formatting
+✅ Right spacing and layout
+
+**Survey Forms in Lao:**
+
+If your organization creates questionnaires in Lao:
+- Questions appear in Lao
+- You can enter answers in Lao
+- All form controls work with Lao text
+- Save and submit in Lao
+
+### Tips for Using Languages
+
+**Best Practices:**
+
+✅ **Choose your preferred language once**
+- Set it at start of day
+- System remembers your choice
+
+✅ **Both languages work offline**
+- Translations stored on device
+- Language switching works without internet
+
+✅ **Consistent with your team**
+- If your team uses Lao, use Lao
+- Makes communication easier
+
+✅ **Dates are automatic**
+- Format matches your language
+- No need to convert manually
+
+### Troubleshooting Language Issues
+
+**Problem:** Globe icon not appearing
+
+**Solutions:**
+1. Check you're logged in
+2. Refresh page (F5)
+3. Clear browser cache
+4. Check browser is up-to-date
+
+---
+
+**Problem:** Some text not changing language
+
+**Possible Reasons:**
+1. **User-created content** - This is normal
+   - Names, titles, questions stay in original language
+   - Only interface elements translate
+2. Try refreshing page
+3. Make sure language fully selected (dropdown closed)
+
+---
+
+**Problem:** Lao text appears as boxes (□□□)
+
+**Solution:**
+Your device needs Lao fonts installed:
+
+**Windows:**
+1. Settings → Time & Language
+2. Language → Add a language
+3. Search "Lao" and add it
+4. Restart browser
+
+**Android:**
+- Most Android 5+ includes Lao fonts
+- Update system if needed
+
+**iPhone/iPad:**
+- iOS 13+ includes Lao fonts
+- Update iOS if needed
+
+---
+
+**Problem:** Wrong language appears on login
+
+**Solution:**
+1. System uses your last saved preference
+2. Change language using globe icon
+3. New choice saves automatically
+4. Next login uses new preference
+
+---
+
+### Language and Offline Mode
+
+**Good News:**
+
+Language works perfectly offline!
+
+✅ **Switch language offline**
+- All translations stored locally
+- No internet needed
+
+✅ **Language syncs when online**
+- Preference saved to server
+- Available on all your devices
+
+**How It Works:**
+
+1. First time you open app:
+   - Translations download automatically
+   - Stored in browser
+
+2. After that:
+   - Language switching instant
+   - Works with or without internet
+
+---
+
 ## Notifications
 
 ### Notification Bell 🔔
@@ -1044,7 +1243,7 @@ A: Sync pending data (frees space automatically), or delete old offline submissi
 
 ---
 
-**Document Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Document Version:** 3.0 (Phase 6 - Localization & Performance)
 **Last Updated:** November 27, 2025
 **For Questions:** Contact your supervisor or system administrator
 

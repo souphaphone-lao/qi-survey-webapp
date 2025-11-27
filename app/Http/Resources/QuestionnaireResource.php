@@ -17,6 +17,11 @@ class QuestionnaireResource extends JsonResource
             'description' => $this->description,
             'surveyjs_json' => $this->surveyjs_json,
             'is_active' => $this->is_active,
+            'parent_version_id' => $this->parent_version_id,
+            'published_at' => $this->published_at?->toISOString(),
+            'deprecated_at' => $this->deprecated_at?->toISOString(),
+            'version_notes' => $this->version_notes,
+            'breaking_changes' => $this->breaking_changes,
             'submissions_count' => $this->submissions()->count(),
             'created_by' => $this->whenLoaded('createdBy', fn () => [
                 'id' => $this->createdBy->id,

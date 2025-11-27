@@ -3,155 +3,219 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 class DashboardService
 {
     /**
-     * Get dashboard overview with summary statistics
+     * Cache TTL values (in seconds)
+     */
+    private const CACHE_TTL_OVERVIEW = 300; // 5 minutes
+    private const CACHE_TTL_TRENDS = 900; // 15 minutes
+    private const CACHE_TTL_INSTITUTION = 600; // 10 minutes
+    private const CACHE_TTL_QUESTIONNAIRE = 600; // 10 minutes
+
+    /**
+     * Cache key prefix
+     */
+    private const CACHE_PREFIX = 'dashboard';
+
+    /**
+     * Get dashboard overview with summary statistics (cached)
      */
     public function getOverview(array $filters): array
     {
-        $query = $this->applyFilters(
-            DB::table('submissions')
-                ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
-                ->whereNull('submissions.deleted_at'),
-            $filters
-        );
+        $cacheKey = $this->getCacheKey('overview', $filters);
 
-        // Calculate summary statistics
-        $summary = $query->selectRaw('
-            COUNT(*) as total_submissions,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
-        ', ['draft', 'submitted', 'approved', 'rejected'])->first();
+        return Cache::remember($cacheKey, self::CACHE_TTL_OVERVIEW, function () use ($filters) {
+            $query = $this->applyFilters(
+                DB::table('submissions')
+                    ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
+                    ->whereNull('submissions.deleted_at'),
+                $filters
+            );
 
-        // Calculate trends (this month vs last month)
-        $trends = $this->calculateTrends($filters);
+            // Calculate summary statistics
+            $summary = $query->selectRaw('
+                COUNT(*) as total_submissions,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
+            ', ['draft', 'submitted', 'approved', 'rejected'])->first();
 
-        // Status distribution
-        $statusDistribution = $this->getStatusDistribution($filters);
+            // Calculate trends (this month vs last month)
+            $trends = $this->calculateTrends($filters);
 
-        return [
-            'summary' => $summary,
-            'trends' => $trends,
-            'status_distribution' => $statusDistribution,
-        ];
+            // Status distribution
+            $statusDistribution = $this->getStatusDistribution($filters);
+
+            return [
+                'summary' => $summary,
+                'trends' => $trends,
+                'status_distribution' => $statusDistribution,
+            ];
+        });
     }
 
     /**
-     * Get time series trends data
+     * Get time series trends data (cached)
      */
     public function getTrends(string $period, Carbon $from, Carbon $to, array $filters): array
     {
-        $query = $this->applyFilters(
-            DB::table('submissions')
-                ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
-                ->whereNull('submissions.deleted_at')
-                ->whereBetween('submissions.created_at', [$from, $to]),
-            $filters
-        );
+        $cacheKey = $this->getCacheKey('trends', array_merge($filters, [
+            'period' => $period,
+            'from' => $from->toDateString(),
+            'to' => $to->toDateString(),
+        ]));
 
-        // Determine date grouping based on period
-        $dateFormat = match($period) {
-            'daily' => 'DATE(submissions.created_at)',
-            'weekly' => 'DATE_TRUNC(\'week\', submissions.created_at)',
-            'monthly' => 'DATE_TRUNC(\'month\', submissions.created_at)',
-            default => 'DATE(submissions.created_at)',
-        };
+        return Cache::remember($cacheKey, self::CACHE_TTL_TRENDS, function () use ($period, $from, $to, $filters) {
+            $query = $this->applyFilters(
+                DB::table('submissions')
+                    ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
+                    ->whereNull('submissions.deleted_at')
+                    ->whereBetween('submissions.created_at', [$from, $to]),
+                $filters
+            );
 
-        $trends = $query->selectRaw("
-            $dateFormat as date,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected,
-            COUNT(*) as total
-        ", ['draft', 'submitted', 'approved', 'rejected'])
-        ->groupBy(DB::raw($dateFormat))
-        ->orderBy(DB::raw($dateFormat))
-        ->get();
+            // Determine date grouping based on period
+            $dateFormat = match($period) {
+                'daily' => 'DATE(submissions.created_at)',
+                'weekly' => 'DATE_TRUNC(\'week\', submissions.created_at)',
+                'monthly' => 'DATE_TRUNC(\'month\', submissions.created_at)',
+                default => 'DATE(submissions.created_at)',
+            };
 
-        return $trends->toArray();
+            $trends = $query->selectRaw("
+                $dateFormat as date,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected,
+                COUNT(*) as total
+            ", ['draft', 'submitted', 'approved', 'rejected'])
+            ->groupBy(DB::raw($dateFormat))
+            ->orderBy(DB::raw($dateFormat))
+            ->get();
+
+            return $trends->toArray();
+        });
     }
 
     /**
-     * Get institution breakdown with submission counts
+     * Get institution breakdown with submission counts (cached)
      */
     public function getInstitutionBreakdown(array $filters): array
     {
-        $query = $this->applyFilters(
-            DB::table('submissions')
-                ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
-                ->whereNull('submissions.deleted_at'),
-            $filters
-        );
+        $cacheKey = $this->getCacheKey('institution_breakdown', $filters);
 
-        $breakdown = $query->selectRaw('
-            institutions.id,
-            institutions.name,
-            institutions.code,
-            institutions.level,
-            COUNT(*) as total_submissions,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
-        ', ['draft', 'submitted', 'approved', 'rejected'])
-        ->groupBy('institutions.id', 'institutions.name', 'institutions.code', 'institutions.level')
-        ->orderBy('institutions.name')
-        ->get();
+        return Cache::remember($cacheKey, self::CACHE_TTL_INSTITUTION, function () use ($filters) {
+            $query = $this->applyFilters(
+                DB::table('submissions')
+                    ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
+                    ->whereNull('submissions.deleted_at'),
+                $filters
+            );
 
-        return $breakdown->toArray();
+            $breakdown = $query->selectRaw('
+                institutions.id,
+                institutions.name,
+                institutions.code,
+                institutions.level,
+                COUNT(*) as total_submissions,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
+            ', ['draft', 'submitted', 'approved', 'rejected'])
+            ->groupBy('institutions.id', 'institutions.name', 'institutions.code', 'institutions.level')
+            ->orderBy('institutions.name')
+            ->get();
+
+            return $breakdown->toArray();
+        });
     }
 
     /**
-     * Get questionnaire-specific statistics
+     * Get questionnaire-specific statistics (cached)
      */
     public function getQuestionnaireStats(string $code, array $filters): array
     {
-        $query = $this->applyFilters(
-            DB::table('submissions')
-                ->join('questionnaires', 'submissions.questionnaire_id', '=', 'questionnaires.id')
-                ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
-                ->where('questionnaires.code', $code)
-                ->whereNull('submissions.deleted_at'),
-            $filters
-        );
+        $cacheKey = $this->getCacheKey('questionnaire_stats', array_merge($filters, ['code' => $code]));
 
-        // Overall statistics
-        $summary = $query->selectRaw('
-            COUNT(*) as total_submissions,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
-        ', ['draft', 'submitted', 'approved', 'rejected'])->first();
+        return Cache::remember($cacheKey, self::CACHE_TTL_QUESTIONNAIRE, function () use ($code, $filters) {
+            $query = $this->applyFilters(
+                DB::table('submissions')
+                    ->join('questionnaires', 'submissions.questionnaire_id', '=', 'questionnaires.id')
+                    ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
+                    ->where('questionnaires.code', $code)
+                    ->whereNull('submissions.deleted_at'),
+                $filters
+            );
 
-        // Version breakdown
-        $versionBreakdown = $this->applyFilters(
-            DB::table('submissions')
-                ->join('questionnaires', 'submissions.questionnaire_id', '=', 'questionnaires.id')
-                ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
-                ->where('questionnaires.code', $code)
-                ->whereNull('submissions.deleted_at'),
-            $filters
-        )
-        ->selectRaw('
-            questionnaires.version,
-            COUNT(*) as count,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved
-        ', ['approved'])
-        ->groupBy('questionnaires.version')
-        ->orderBy('questionnaires.version', 'desc')
-        ->get();
+            // Overall statistics
+            $summary = $query->selectRaw('
+                COUNT(*) as total_submissions,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
+            ', ['draft', 'submitted', 'approved', 'rejected'])->first();
 
-        return [
-            'summary' => $summary,
-            'version_breakdown' => $versionBreakdown->toArray(),
-        ];
+            // Version breakdown
+            $versionBreakdown = $this->applyFilters(
+                DB::table('submissions')
+                    ->join('questionnaires', 'submissions.questionnaire_id', '=', 'questionnaires.id')
+                    ->join('institutions', 'submissions.institution_id', '=', 'institutions.id')
+                    ->where('questionnaires.code', $code)
+                    ->whereNull('submissions.deleted_at'),
+                $filters
+            )
+            ->selectRaw('
+                questionnaires.version,
+                COUNT(*) as count,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved
+            ', ['approved'])
+            ->groupBy('questionnaires.version')
+            ->orderBy('questionnaires.version', 'desc')
+            ->get();
+
+            return [
+                'summary' => $summary,
+                'version_breakdown' => $versionBreakdown->toArray(),
+            ];
+        });
+    }
+
+    /**
+     * Clear all dashboard cache
+     */
+    public function clearCache(): void
+    {
+        Cache::forget(self::CACHE_PREFIX . ':*');
+    }
+
+    /**
+     * Clear specific dashboard cache by key pattern
+     */
+    public function clearCacheByPattern(string $pattern): void
+    {
+        Cache::forget(self::CACHE_PREFIX . ':' . $pattern . ':*');
+    }
+
+    /**
+     * Generate cache key from method and filters
+     */
+    protected function getCacheKey(string $method, array $filters): string
+    {
+        // Sort filters for consistent cache keys
+        ksort($filters);
+
+        // Create hash of filters for shorter key
+        $filterHash = md5(json_encode($filters));
+
+        return self::CACHE_PREFIX . ':' . $method . ':' . $filterHash;
     }
 
     /**

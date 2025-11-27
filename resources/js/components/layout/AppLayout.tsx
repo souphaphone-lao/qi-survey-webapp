@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import NotificationBell from './NotificationBell';
 import { ConnectionStatus } from '@/components/common/ConnectionStatus';
 import { SyncProgress } from '@/components/common/SyncProgress';
+import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
 
 interface NavItem {
     name: string;
@@ -67,6 +68,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 <div className="flex items-center space-x-4">
                                     <ConnectionStatus />
                                     <NotificationBell />
+                                    <LanguageSwitcher />
                                     <span className="text-sm text-gray-700">
                                         {user?.name}
                                         {user?.institution && (
@@ -142,7 +144,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 </div>
                                 <ConnectionStatus />
                             </div>
-                            <div className="mt-3 space-y-1">
+                            <div className="mt-3 space-y-1 px-4">
+                                <div className="pb-2">
+                                    <LanguageSwitcher />
+                                </div>
                                 <button
                                     onClick={handleLogout}
                                     className="block w-full px-4 py-2 text-left text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"

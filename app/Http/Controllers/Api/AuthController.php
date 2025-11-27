@@ -63,6 +63,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'institution_id' => $user->institution_id,
                 'institution' => $user->institution,
+                'locale' => $user->locale ?? 'en',
                 'roles' => $user->getRoleNames()->toArray(),
                 'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
             ],
@@ -88,8 +89,24 @@ class AuthController extends Controller
             'email' => $user->email,
             'institution_id' => $user->institution_id,
             'institution' => $user->institution,
+            'locale' => $user->locale ?? 'en',
             'roles' => $user->getRoleNames()->toArray(),
             'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+        ]);
+    }
+
+    public function updatePreferences(Request $request): JsonResponse
+    {
+        $request->validate([
+            'locale' => 'required|string|in:en,lo',
+        ]);
+
+        $user = $request->user();
+        $user->update(['locale' => $request->locale]);
+
+        return response()->json([
+            'message' => 'Preferences updated successfully',
+            'locale' => $user->locale,
         ]);
     }
 }

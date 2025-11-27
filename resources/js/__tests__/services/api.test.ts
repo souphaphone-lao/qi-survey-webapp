@@ -387,6 +387,12 @@ describe('API Service', () => {
             description: 'Test description',
             surveyjs_json: { pages: [] },
             is_active: true,
+            parent_version_id: null,
+            published_at: null,
+            deprecated_at: null,
+            version_notes: null,
+            breaking_changes: false,
+            submissions_count: 0,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
         };

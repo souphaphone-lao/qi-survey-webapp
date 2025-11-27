@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { authApi } from '@/services/api';
 import type { User, LoginCredentials } from '@/types';
+import i18n from '@/i18n/config';
 
 interface AuthContextType {
     user: User | null;
@@ -35,6 +36,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const userData = await authApi.getUser();
             setUser(userData);
             localStorage.setItem('user', JSON.stringify(userData));
+
+            // Sync locale with i18n if user has a preference
+            if (userData.locale && userData.locale !== i18n.language) {
+                i18n.changeLanguage(userData.locale);
+            }
         } catch {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
@@ -53,6 +59,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         setUser(response.user);
+
+        // Sync locale with i18n if user has a preference
+        if (response.user.locale && response.user.locale !== i18n.language) {
+            i18n.changeLanguage(response.user.locale);
+        }
     };
 
     const logout = async () => {

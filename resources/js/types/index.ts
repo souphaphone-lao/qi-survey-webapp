@@ -6,6 +6,7 @@ export interface User {
     institution?: Institution;
     department_id?: number | null;
     department?: Department | null;
+    locale?: string;
     is_active: boolean;
     roles: string[];
     permissions?: string[];
@@ -66,6 +67,11 @@ export interface Questionnaire {
     description: string | null;
     surveyjs_json: SurveyJSJson;
     is_active: boolean;
+    parent_version_id: number | null;
+    published_at: string | null;
+    deprecated_at: string | null;
+    version_notes: string | null;
+    breaking_changes: boolean;
     submissions_count: number;
     created_by?: { id: number; name: string };
     updated_by?: { id: number; name: string } | null;

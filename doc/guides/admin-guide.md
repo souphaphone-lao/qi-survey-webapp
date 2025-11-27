@@ -1,6 +1,6 @@
 # QI Survey Web Application - Administrator Guide
 
-**Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Version:** 3.0 (Phase 6 - Localization & Performance)
 **Last Updated:** November 27, 2025
 **Audience:** System Administrators, Institution Managers
 
@@ -17,9 +17,10 @@
 7. [Question-Level Permissions](#question-level-permissions)
 8. [Reviewing Submissions](#reviewing-submissions)
 9. [Monitoring Offline Submissions & Sync](#monitoring-offline-submissions--sync)
-10. [Notifications](#notifications)
-11. [Best Practices](#best-practices)
-12. [Troubleshooting](#troubleshooting)
+10. [Language Management](#language-management)
+11. [Notifications](#notifications)
+12. [Best Practices](#best-practices)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -398,18 +399,46 @@ Active: ✓
 - Questions are added/removed
 - Question types are changed
 
-### Duplicating a Questionnaire
+### Duplicating a Questionnaire (Phase 5: Versioning)
 
-To create a new version:
+**Phase 5** introduced comprehensive questionnaire versioning. To create a new version:
 
 1. Click **Duplicate** button next to the questionnaire
-2. System creates copy with:
-   - Same title + " (Copy)"
+2. Modal appears asking for:
+   - **New Version Number:** Suggested next version (e.g., 2 if current is 1)
+   - **Version Notes:** Required description of changes (min 10 characters)
+3. Click **Create Version**
+4. System creates copy with:
+   - Same title
    - Same code
-   - Version incremented by 1
+   - Specified version number
+   - Your version notes stored
    - Inactive by default
-3. Edit the duplicate to make changes
-4. Activate when ready
+   - All permissions copied from original
+5. Edit the duplicate to make changes if needed
+6. Activate when ready
+
+**Example Versioning Workflow:**
+
+```
+Patient Survey v1 (Active)
+  ↓ Duplicate with notes: "Added mental health questions"
+Patient Survey v2 (Inactive)
+  ↓ Activate v2
+Patient Survey v1 (Inactive) + Patient Survey v2 (Active)
+```
+
+**Version Notes:**
+- Used to track what changed between versions
+- Visible in questionnaire list
+- Helps with audit and compliance
+- Required when creating new version
+
+**Version Management:**
+- Only one version per code can be active
+- Activating a version deactivates others with same code
+- All versions remain available for historical reference
+- Submissions linked to specific version they used
 
 ### Activating/Deactivating a Questionnaire
 
@@ -964,6 +993,205 @@ Look for these log patterns:
 
 ---
 
+## Language Management
+
+### Overview (Phase 6: Localization)
+
+**Phase 6** introduced comprehensive internationalization support with English and Lao languages. The system now supports:
+
+- Multi-language user interface
+- Per-user language preferences
+- Automatic language detection
+- Locale-aware date formatting
+- Language switching without page reload
+
+### Supported Languages
+
+**Current Languages:**
+
+1. **English (en)** - Default language
+   - Full interface translation
+   - Date format: MM/DD/YYYY
+   - 12-hour time format
+
+2. **Lao (lo)** - Full Unicode support
+   - Complete Lao translation
+   - Proper Lao script rendering
+   - Date format: DD/MM/YYYY
+   - 24-hour time format
+
+### Changing Your Language
+
+**Using Language Switcher:**
+
+1. Look for **globe icon** (🌐) in top-right corner of navigation
+2. Click globe icon to open language dropdown
+3. Select your preferred language:
+   - **English** - English interface
+   - **ລາວ (Lao)** - Lao interface
+4. Interface updates immediately
+
+**Language Badge:**
+- Shows current language code (EN or LO)
+- Located on globe icon
+- Updates when language changes
+
+### User Language Preferences
+
+**Automatic Persistence:**
+
+When you change language:
+
+✅ **Saved to your user profile** (if logged in)
+- Preference stored in database
+- Applied on all devices
+- Persists across sessions
+
+✅ **Saved to browser** (localStorage)
+- Used if not logged in
+- Device-specific setting
+
+**Automatic Language Detection:**
+
+On first visit:
+1. System checks your user profile preference
+2. If not set, uses browser language setting
+3. Falls back to English if language not supported
+
+### What's Translated
+
+**User Interface Elements:**
+
+- Navigation menus
+- Button labels
+- Form labels and placeholders
+- Status messages
+- Validation errors
+- Success/error notifications
+- Table headers
+- Modal dialogs
+
+**Feature Areas:**
+
+- **Common:** Shared UI elements (save, cancel, delete, etc.)
+- **Authentication:** Login, logout, password changes
+- **Dashboard:** Statistics, charts, filters
+- **Questionnaires:** Management, versioning, activation
+- **Submissions:** Workflow, status transitions, approval
+- **Users:** User management, roles, permissions
+- **Institutions:** Hierarchy management
+- **Departments:** Department administration
+
+**Date and Time:**
+
+All dates display in locale-aware format:
+
+| Format Type | English | Lao |
+|-------------|---------|-----|
+| Date | Nov 27, 2025 | 27 ພ.ຈ. 2025 |
+| Date/Time | Nov 27, 2025, 2:30 PM | 27 ພ.ຈ. 2025, 14:30 |
+| Relative | 2 hours ago | 2 ຊົ່ວໂມງກ່ອນ |
+
+### What's NOT Translated
+
+**User-Generated Content:**
+
+The following remain in original language:
+
+❌ Institution names
+❌ Department names
+❌ User names and emails
+❌ Questionnaire titles and descriptions
+❌ Question text within surveys
+❌ Submission data/answers
+❌ Rejection comments
+❌ Custom notes
+
+**Recommendation:** For organizations serving both English and Lao users, consider:
+
+- Creating questionnaires in both languages
+- Using bilingual naming for institutions/departments
+- Providing translations in description fields
+
+### Managing User Language Preferences
+
+**Setting User's Default Language:**
+
+Currently, users set their own language preference via the language switcher. Language preference is automatically saved to their profile.
+
+**Future Enhancement:**
+
+Administrators may gain ability to:
+- Set default organization language
+- Set default language for new users
+- View user language preferences in user list
+
+### Troubleshooting Language Issues
+
+**Problem:** Language switcher not appearing
+
+**Solutions:**
+1. Refresh page (Ctrl+R or F5)
+2. Clear browser cache
+3. Check you're logged in
+4. Verify you're on a page with navigation bar
+
+---
+
+**Problem:** Some text not translating
+
+**Solutions:**
+1. This may be user-generated content (expected)
+2. Check language is fully selected (dropdown closed)
+3. Refresh page
+4. Report missing translations to administrator
+
+---
+
+**Problem:** Wrong language loading on login
+
+**Solutions:**
+1. Change language using language switcher
+2. New preference will be saved automatically
+3. Next login will use saved preference
+
+---
+
+**Problem:** Date formats look wrong
+
+**Solutions:**
+1. Verify correct language selected
+2. Dates should match your language:
+   - English: Month Day, Year (Nov 27, 2025)
+   - Lao: Day Month Year (27 ພ.ຈ. 2025)
+3. Contact administrator if persists
+
+### Browser Compatibility
+
+**Language Support:**
+
+All modern browsers support:
+- Unicode Lao script
+- Language switching
+- localStorage for preferences
+
+**Minimum Requirements:**
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+**Font Requirements:**
+
+Lao text requires proper font support:
+- Most modern operating systems include Lao fonts
+- If Lao text appears as boxes (□□□), install Lao language pack
+- Windows: Settings → Time & Language → Language → Add Lao
+- macOS: System Preferences → Language & Region → Add Lao
+- Linux: Install `fonts-lao` package
+
+---
+
 ## Notifications
 
 Real-time notifications keep you informed of submission activities.
@@ -1297,6 +1525,6 @@ For additional support:
 
 ---
 
-**Document Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Document Version:** 3.0 (Phase 6 - Localization & Performance)
 **Last Updated:** November 27, 2025
 **For Questions:** Contact your system administrator

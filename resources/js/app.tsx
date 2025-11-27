@@ -7,6 +7,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import Login from '@/pages/auth/Login';
 import Dashboard from '@/pages/dashboard/Dashboard';
 import { registerServiceWorker } from '@/pwa-register';
+import '@/i18n/config'; // Initialize i18n
 
 // Lazy load pages for better performance
 const UserList = React.lazy(() => import('@/pages/users/UserList'));

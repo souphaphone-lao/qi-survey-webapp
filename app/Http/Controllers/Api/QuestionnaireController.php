@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\QuestionnaireRequest;
 use App\Http\Resources\QuestionnaireResource;
 use App\Models\Questionnaire;
+use App\Services\QuestionnaireVersionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -127,16 +128,29 @@ class QuestionnaireController extends Controller
         ]);
     }
 
-    public function duplicate(Questionnaire $questionnaire): JsonResponse
+    public function duplicate(Request $request, Questionnaire $questionnaire): JsonResponse
     {
         $this->authorize('create', Questionnaire::class);
 
-        $newQuestionnaire = $questionnaire->duplicate();
+        $request->validate([
+            'version_notes' => 'nullable|string',
+            'breaking_changes' => 'nullable|boolean',
+            'copy_permissions' => 'nullable|boolean',
+        ]);
+
+        $versionService = new QuestionnaireVersionService();
+        $newQuestionnaire = $versionService->duplicateAsNewVersion(
+            $questionnaire,
+            $request->version_notes,
+            $request->boolean('breaking_changes', false),
+            $request->boolean('copy_permissions', false)
+        );
+
         $newQuestionnaire->update(['created_by' => auth()->id()]);
         $newQuestionnaire->load('createdBy');
 
         return response()->json([
-            'message' => 'Questionnaire duplicated successfully',
+            'message' => 'Questionnaire duplicated successfully as version ' . $newQuestionnaire->version,
             'data' => new QuestionnaireResource($newQuestionnaire),
         ], 201);
     }
@@ -145,12 +159,14 @@ class QuestionnaireController extends Controller
     {
         $this->authorize('update', $questionnaire);
 
-        $questionnaire->update(['is_active' => true, 'updated_by' => auth()->id()]);
+        $versionService = new QuestionnaireVersionService();
+        $questionnaire = $versionService->activateVersion($questionnaire);
 
+        $questionnaire->update(['updated_by' => auth()->id()]);
         $questionnaire->load(['createdBy', 'updatedBy']);
 
         return response()->json([
-            'message' => 'Questionnaire activated successfully',
+            'message' => 'Questionnaire activated successfully (other versions deactivated)',
             'data' => new QuestionnaireResource($questionnaire),
         ]);
     }
@@ -159,14 +175,53 @@ class QuestionnaireController extends Controller
     {
         $this->authorize('update', $questionnaire);
 
-        $questionnaire->update(['is_active' => false, 'updated_by' => auth()->id()]);
+        $versionService = new QuestionnaireVersionService();
+        $questionnaire = $versionService->deprecateVersion($questionnaire);
 
+        $questionnaire->update(['updated_by' => auth()->id()]);
         $questionnaire->load(['createdBy', 'updatedBy']);
 
         return response()->json([
             'message' => 'Questionnaire deactivated successfully',
             'data' => new QuestionnaireResource($questionnaire),
         ]);
+    }
+
+    public function versions(Questionnaire $questionnaire): JsonResponse
+    {
+        $this->authorize('view', $questionnaire);
+
+        $versionService = new QuestionnaireVersionService();
+        $versions = $versionService->getVersionsByCode($questionnaire->code);
+
+        return response()->json([
+            'code' => $questionnaire->code,
+            'versions' => QuestionnaireResource::collection($versions),
+        ]);
+    }
+
+    public function compare(Request $request, Questionnaire $questionnaire): JsonResponse
+    {
+        $this->authorize('view', $questionnaire);
+
+        $request->validate([
+            'other_id' => 'required|exists:questionnaires,id',
+        ]);
+
+        $otherQuestionnaire = Questionnaire::findOrFail($request->other_id);
+        $this->authorize('view', $otherQuestionnaire);
+
+        // Ensure both questionnaires have the same code
+        if ($questionnaire->code !== $otherQuestionnaire->code) {
+            return response()->json([
+                'message' => 'Can only compare questionnaires with the same code',
+            ], 422);
+        }
+
+        $versionService = new QuestionnaireVersionService();
+        $comparison = $versionService->compareVersions($questionnaire, $otherQuestionnaire);
+
+        return response()->json($comparison);
     }
 
     public function list(): JsonResponse

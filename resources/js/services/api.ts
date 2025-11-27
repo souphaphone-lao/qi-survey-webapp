@@ -203,9 +203,29 @@ export const questionnairesApi = {
         await api.delete(`/questionnaires/${id}`);
     },
 
-    duplicate: async (id: number): Promise<Questionnaire> => {
-        const response = await api.post<{ data: Questionnaire }>(`/questionnaires/${id}/duplicate`);
+    duplicate: async (id: number, data?: { version_notes?: string; breaking_changes?: boolean; copy_permissions?: boolean }): Promise<Questionnaire> => {
+        const response = await api.post<{ data: Questionnaire }>(`/questionnaires/${id}/duplicate`, data);
         return response.data.data;
+    },
+
+    activate: async (id: number): Promise<Questionnaire> => {
+        const response = await api.post<{ data: Questionnaire }>(`/questionnaires/${id}/activate`);
+        return response.data.data;
+    },
+
+    deactivate: async (id: number): Promise<Questionnaire> => {
+        const response = await api.post<{ data: Questionnaire }>(`/questionnaires/${id}/deactivate`);
+        return response.data.data;
+    },
+
+    versions: async (id: number): Promise<{ code: string; versions: Questionnaire[] }> => {
+        const response = await api.get<{ code: string; versions: Questionnaire[] }>(`/questionnaires/${id}/versions`);
+        return response.data;
+    },
+
+    compare: async (id: number, otherId: number): Promise<any> => {
+        const response = await api.post(`/questionnaires/${id}/compare`, { other_id: otherId });
+        return response.data;
     },
 };
 

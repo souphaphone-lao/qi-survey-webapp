@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { questionnairesApi } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { VersionBadge } from '@/components/questionnaires/VersionBadge';
 
 export default function QuestionnaireList() {
     const { hasPermission } = useAuth();
@@ -23,10 +24,46 @@ export default function QuestionnaireList() {
         },
     });
 
+    const duplicateMutation = useMutation({
+        mutationFn: ({ id, versionNotes }: { id: number; versionNotes?: string }) =>
+            questionnairesApi.duplicate(id, { version_notes: versionNotes }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['questionnaires'] });
+            alert('Questionnaire duplicated successfully');
+        },
+        onError: (error: any) => {
+            alert(error.response?.data?.message || 'Failed to duplicate questionnaire');
+        },
+    });
+
+    const activateMutation = useMutation({
+        mutationFn: questionnairesApi.activate,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['questionnaires'] });
+            alert('Questionnaire activated successfully');
+        },
+        onError: (error: any) => {
+            alert(error.response?.data?.message || 'Failed to activate questionnaire');
+        },
+    });
+
     const handleDelete = (id: number, title: string) => {
         if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
             setDeletingId(id);
             deleteMutation.mutate(id);
+        }
+    };
+
+    const handleDuplicate = (id: number, title: string) => {
+        const versionNotes = prompt(`Create new version of "${title}".\n\nVersion notes (optional):`);
+        if (versionNotes !== null) {
+            duplicateMutation.mutate({ id, versionNotes: versionNotes || undefined });
+        }
+    };
+
+    const handleActivate = (id: number, title: string) => {
+        if (window.confirm(`Activate "${title}"? This will deactivate other versions with the same code.`)) {
+            activateMutation.mutate(id);
         }
     };
 
@@ -57,12 +94,30 @@ export default function QuestionnaireList() {
                             <tr key={q.id}>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">{q.title}</td>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{q.code}</td>
-                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">v{q.version}</td>
+                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                    <VersionBadge version={q.version} isActive={q.is_active} isDeprecated={!!q.deprecated_at} />
+                                </td>
                                 <td className="whitespace-nowrap px-6 py-4"><span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${q.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{q.is_active ? 'Active' : 'Inactive'}</span></td>
                                 <td className="whitespace-nowrap px-6 py-4 text-sm space-x-2">
                                     {hasPermission('submissions.create') && <Link to={`/questionnaires/${q.id}/submissions/create`} className="text-green-600 hover:text-green-900">Fill</Link>}
                                     {hasPermission('questionnaires.update') && <Link to={`/questionnaires/${q.id}/edit`} className="text-indigo-600 hover:text-indigo-900">Edit</Link>}
                                     {hasPermission('questionnaires.update') && <Link to={`/questionnaires/${q.id}/permissions`} className="text-purple-600 hover:text-purple-900">Permissions</Link>}
+                                    {hasPermission('questionnaires.create') && (
+                                        <button
+                                            onClick={() => handleDuplicate(q.id, q.title)}
+                                            className="text-blue-600 hover:text-blue-900"
+                                        >
+                                            Duplicate
+                                        </button>
+                                    )}
+                                    {hasPermission('questionnaires.update') && !q.is_active && (
+                                        <button
+                                            onClick={() => handleActivate(q.id, q.title)}
+                                            className="text-orange-600 hover:text-orange-900"
+                                        >
+                                            Activate
+                                        </button>
+                                    )}
                                     {hasPermission('questionnaires.delete') && q.submissions_count === 0 && (
                                         <button
                                             onClick={() => handleDelete(q.id, q.title)}
