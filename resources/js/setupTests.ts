@@ -1,9 +1,17 @@
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
+import 'fake-indexeddb/auto';
 
 // Polyfill for TextEncoder/TextDecoder in jsdom
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
+
+// Polyfill for structuredClone (required by fake-indexeddb)
+if (!global.structuredClone) {
+    global.structuredClone = (obj: any) => {
+        return JSON.parse(JSON.stringify(obj));
+    };
+}
 
 // Mock window.matchMedia for components that use media queries
 Object.defineProperty(window, 'matchMedia', {

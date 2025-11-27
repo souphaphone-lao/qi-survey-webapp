@@ -1,7 +1,7 @@
 # QI Survey Web Application - Enumerator Guide
 
-**Version:** 1.0
-**Last Updated:** November 26, 2025
+**Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Last Updated:** November 27, 2025
 **Audience:** Data Collectors, Enumerators, Field Staff
 
 ---
@@ -14,11 +14,12 @@
 4. [Creating Submissions](#creating-submissions)
 5. [Working with Surveys](#working-with-surveys)
 6. [Editing and Saving](#editing-and-saving)
-7. [Submitting for Approval](#submitting-for-approval)
-8. [Handling Rejections](#handling-rejections)
-9. [Notifications](#notifications)
-10. [Tips and Best Practices](#tips-and-best-practices)
-11. [Troubleshooting](#troubleshooting)
+7. [Working Offline](#working-offline)
+8. [Submitting for Approval](#submitting-for-approval)
+9. [Handling Rejections](#handling-rejections)
+10. [Notifications](#notifications)
+11. [Tips and Best Practices](#tips-and-best-practices)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -271,10 +272,262 @@ Treatment Cost: __________ (grayed out, locked)
 
 ### Auto-Save Feature
 
-**Important:** The system does NOT auto-save.
-- You must manually click **Save Draft** to save your work
-- If you close the browser without saving, data may be lost
+**Offline Auto-Save:**
+- When working offline, the system **automatically saves** your work every 30 seconds
+- Progress is shown in the offline banner: "Last saved: 2:34 PM"
+- Data is stored locally on your device
+
+**Online Manual Save:**
+- When online, you must manually click **Save Draft** to save your work
+- Data is immediately saved to the server
 - Save frequently to prevent data loss!
+
+---
+
+## Working Offline
+
+### Overview
+
+The application now works seamlessly **both online and offline**! You can continue working on submissions even when you lose internet connection, and all your changes will be saved locally on your device.
+
+### Connection Status Indicator
+
+**Location:** Top-right corner of the navigation bar, next to notifications
+
+**Status Indicators:**
+
+| Indicator | Meaning | What You Can Do |
+|-----------|---------|-----------------|
+| 🟢 **Online** | Connected to internet | All features available |
+| 🟠 **Offline** | No internet connection | Create/edit drafts, attach files |
+| 🔵 **Syncing...** | Uploading data to server | Wait for sync to complete |
+| 🟠 **Sync (3)** | 3 items waiting to sync | Click to manually trigger sync |
+
+### When You Go Offline
+
+When internet connection is lost:
+
+1. **Connection Status** changes to "Offline" (orange dot)
+2. **Yellow banner** appears at top of form:
+   ```
+   ⚠️ You are offline
+   Your changes are being saved locally and will sync when you reconnect.
+   Last saved: 2:34 PM
+   ```
+3. **Submit button** becomes disabled
+4. **Save button** changes to "Save Locally"
+
+### What You Can Do Offline
+
+✅ **Create new submissions** (saved as drafts on your device)
+✅ **Edit existing draft submissions**
+✅ **Fill out survey forms** (works exactly the same)
+✅ **Attach files** (stored locally, up to 50MB per file)
+✅ **Auto-save** every 30 seconds
+✅ **View cached questionnaires** (that you've accessed before)
+
+### What You Cannot Do Offline
+
+❌ **Submit for approval** (requires online connection)
+❌ **View new questionnaires** (only cached ones available)
+❌ **Approve/reject submissions** (admin feature, requires online)
+❌ **View other users' new submissions**
+
+### Working Offline - Step by Step
+
+**1. Creating Submissions Offline:**
+
+1. Navigate to Questionnaires
+2. Select a questionnaire (must be cached)
+3. Click "Create Submission"
+4. Fill out the form as normal
+5. Click "Save Locally" button
+6. Confirmation: "Saved locally - will sync when online"
+
+**2. Editing Submissions Offline:**
+
+1. Go to Submissions list
+2. Find your draft submission
+3. Click "Edit"
+4. Make changes
+5. Click "Save Locally"
+6. Auto-saves every 30 seconds
+
+**3. Attaching Files Offline:**
+
+1. Click file upload field in the form
+2. Select file from your device (max 50MB)
+3. File is stored locally
+4. Shows "Pending upload" status
+5. Files upload automatically when connection returns
+
+**Storage Limits:**
+- **Per File:** 50MB maximum
+- **Total Storage:** 500MB for all offline files
+- Files automatically removed after successful upload to free space
+
+### When Connection Returns
+
+**Automatic Sync:**
+
+1. Connection status changes to "Syncing..." (blue)
+2. Submissions sync to server automatically (500ms delay)
+3. Files upload after submissions
+4. Progress shown in bottom-right toast notification
+5. When complete: Connection status shows "Online" (green)
+
+**What Gets Synced:**
+
+- Draft submissions you created offline
+- Changes to existing drafts
+- File attachments
+- All data merged with server
+
+**Sync Priority:**
+
+- **High Priority (synced first):** Submitted submissions
+- **Normal Priority:** Draft submissions
+- **After Submissions:** File attachments
+
+### Manual Sync
+
+**When to Manually Sync:**
+
+✅ Before important deadline
+✅ Before closing browser
+✅ To verify data uploaded
+✅ If auto-sync didn't trigger
+
+**How to Manually Sync:**
+
+1. Look for orange "Sync (X)" button in top-right corner
+2. Number shows how many items waiting to sync
+3. Click the "Sync (X)" button
+4. Sync starts immediately
+5. Progress toast appears in bottom-right
+6. Wait for sync to complete
+
+### Sync Status in Submissions List
+
+**Sync Status Badges:**
+
+| Badge | Meaning |
+|-------|---------|
+| ✓ **Synced** (green) | Saved to server, up-to-date |
+| ⏳ **Pending** (orange, spinning) | Waiting to upload |
+| ⚠️ **Sync Error** (red) | Failed to sync (check connection) |
+
+**Filtering by Sync Status:**
+
+- **All** - Show all submissions
+- **Synced** - Show only server-saved submissions
+- **Pending (5)** - Show unsynced items (number shows count)
+
+### Conflict Resolution
+
+**What if you edit offline while someone else edits online?**
+
+The system uses **per-question merge**:
+
+✅ **Your changes WIN** for questions you modified
+✅ **Server changes WIN** for questions you didn't touch
+✅ **Automatically resolved** - no action needed
+
+**Example:**
+```
+You (offline):              Server (meanwhile):
+- Question 1: "New answer"  - Question 1: "Admin edit"
+- Question 2: (unchanged)   - Question 2: "Server edit"
+- Question 3: "My edit"     - Question 3: (unchanged)
+
+Result after sync:
+- Question 1: "New answer" ← You win (you modified it)
+- Question 2: "Server edit" ← Server wins (you didn't touch it)
+- Question 3: "My edit" ← You win (you modified it)
+```
+
+### Offline Best Practices
+
+✅ **Prepare Before Going Offline:**
+- Load all questionnaires you need (view them once to cache)
+- Sync any pending submissions
+- Check storage space available
+- Note which submissions need completion
+
+✅ **While Offline:**
+- Save drafts frequently (even with auto-save)
+- Monitor storage usage (shown below file upload)
+- Keep track of what you've changed
+- Don't work on same submission in multiple tabs
+
+✅ **After Returning Online:**
+- Wait for auto-sync to complete
+- Verify all submissions show "Synced ✓" badge
+- Check for any "Sync Error" badges
+- Retry failed items if any
+
+### Offline Troubleshooting
+
+**Problem:** Submission won't save offline
+
+**Solutions:**
+1. Check browser storage not full
+2. Try refreshing the page
+3. Check storage usage indicator
+4. Delete old offline submissions
+5. Contact administrator
+
+**Problem:** Files won't attach offline
+
+**Solutions:**
+1. Check file size (max 50MB per file)
+2. Check total storage (max 500MB)
+3. Reduce file size or compress
+4. Sync pending data to free space
+5. Delete old files
+
+**Problem:** Sync keeps failing
+
+**Solutions:**
+1. Check internet connection
+2. Click "Sync (X)" button manually
+3. Refresh page and try again
+4. Check with administrator (server issue?)
+5. Export data locally (copy answers) as backup
+
+**Problem:** "Sync (5)" button doesn't sync
+
+**Solutions:**
+1. Verify you're online (check connection status)
+2. Close and reopen browser
+3. Try different network
+4. Wait a few minutes and retry
+5. Contact administrator
+
+### Data Safety
+
+**Where Data is Stored:**
+
+- **Offline:** Browser storage (IndexedDB)
+- **After Sync:** Server database (permanent)
+
+**Important Notes:**
+
+⚠️ **Browser storage is temporary**
+- Can be cleared by browser/OS
+- Clearing browser data = data loss
+- Always sync to server for permanent storage
+
+⚠️ **Sync frequently**
+- Don't rely solely on offline storage
+- Sync before closing browser
+- Sync before clearing cache
+- Sync before important deadlines
+
+⚠️ **Keep browser tab open during sync**
+- Don't close browser while syncing
+- Wait for "Synced ✓" confirmation
+- Check sync status before closing
 
 ---
 
@@ -665,7 +918,7 @@ A: You can delete drafts. Once submitted, approved, or rejected, you cannot dele
 A: Depends on your organization's workflow. Typically 24-48 hours. Check with your administrator.
 
 **Q: Can I work offline?**
-A: No, the system requires internet connection. Save frequently to prevent data loss.
+A: Yes! The system now works offline. You can create/edit submissions, attach files, and all changes save locally. Data syncs automatically when connection returns.
 
 **Q: What if I disagree with a rejection?**
 A: Make corrections as requested, or add clarifying notes. If still concerned, discuss with administrator.
@@ -678,6 +931,21 @@ A: Contact your administrator. Approved submissions cannot be edited by enumerat
 
 **Q: Who can see locked questions (🔒)?**
 A: Users from the authorized department and administrators can edit locked questions.
+
+**Q: How long does offline data stay saved?**
+A: Indefinitely until you sync to server or clear browser storage. Always sync for permanent storage.
+
+**Q: What happens if I edit offline and someone else edits the same submission online?**
+A: Your changes win for questions you modified. Server changes win for questions you didn't touch. Automatically merged.
+
+**Q: Can I attach large files offline?**
+A: Yes, up to 50MB per file and 500MB total. Larger files should be compressed or uploaded when online.
+
+**Q: How do I know if my offline data synced successfully?**
+A: Check for green "Synced ✓" badge in submissions list. Connection status will show "Online" when all items synced.
+
+**Q: What if I run out of offline storage space?**
+A: Sync pending data (frees space automatically), or delete old offline submissions. You'll see error message if storage full.
 
 ---
 
@@ -776,8 +1044,8 @@ A: Users from the authorized department and administrators can edit locked quest
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** November 26, 2025
+**Document Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Last Updated:** November 27, 2025
 **For Questions:** Contact your supervisor or system administrator
 
 ---

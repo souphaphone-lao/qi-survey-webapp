@@ -8,6 +8,7 @@ This guide provides detailed setup instructions for developers and system admini
 - [Development Setup](#development-setup)
 - [Environment Configuration](#environment-configuration)
 - [Database Setup](#database-setup)
+- [PWA Configuration (Phase 3)](#pwa-configuration-phase-3)
 - [Running the Application](#running-the-application)
 - [Testing](#testing)
 - [Production Deployment](#production-deployment)
@@ -395,6 +396,576 @@ php artisan tinker
 >>> \App\Models\User::first()
 >>> exit
 ```
+
+## PWA Configuration (Phase 3)
+
+### Overview
+
+Phase 3 adds **Progressive Web App (PWA)** functionality with offline support. This section covers the setup and configuration of PWA features.
+
+### What Was Added in Phase 3
+
+**Frontend PWA Features:**
+- Service Worker for offline caching
+- IndexedDB for local data storage (using Dexie.js)
+- Offline submission creation and editing
+- File attachment support (up to 50MB per file, 500MB total)
+- Auto-save every 30 seconds when offline
+- Automatic sync when connection restored
+- Per-question conflict resolution
+
+**Key Dependencies Installed:**
+
+```json
+{
+  "dexie": "^4.0.11",
+  "uuid": "^11.0.5",
+  "vite-plugin-pwa": "^0.21.2",
+  "workbox-window": "^7.3.0"
+}
+```
+
+### Vite PWA Plugin Configuration
+
+The PWA is configured in `vite.config.js`:
+
+**Key Configuration:**
+
+```javascript
+import { VitePWA } from 'vite-plugin-pwa';
+
+export default defineConfig({
+    plugins: [
+        laravel({...}),
+        react(),
+        VitePWA({
+            registerType: 'autoUpdate',
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'google-fonts-cache',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200]
+                            }
+                        }
+                    },
+                    {
+                        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'gstatic-fonts-cache',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200]
+                            }
+                        }
+                    }
+                ]
+            },
+            manifest: {
+                name: 'QI Survey System',
+                short_name: 'QI Survey',
+                description: 'Quality Improvement Survey Data Collection',
+                theme_color: '#ffffff',
+                icons: [
+                    {
+                        src: 'icons/icon-192x192.png',
+                        sizes: '192x192',
+                        type: 'image/png'
+                    },
+                    {
+                        src: 'icons/icon-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png'
+                    }
+                ]
+            }
+        })
+    ]
+});
+```
+
+**What This Does:**
+
+- **Auto-update**: Service worker updates automatically when new version deployed
+- **Caching**: Static assets (JS, CSS, fonts) cached for offline use
+- **Manifest**: PWA installable on mobile devices and desktop
+- **Icons**: App icons for home screen installation
+
+### PWA Icons
+
+**Required Icons:**
+
+Place these files in `public/icons/`:
+
+- `icon-192x192.png` (192x192 pixels)
+- `icon-512x512.png` (512x512 pixels)
+
+**Creating Icons:**
+
+You can use your app logo and resize it to the required dimensions.
+
+**Tools:**
+- [RealFaviconGenerator](https://realfavicongenerator.net/)
+- [PWA Asset Generator](https://github.com/onderceylan/pwa-asset-generator)
+- Image editing tools (Photoshop, GIMP, etc.)
+
+**Quick Generation:**
+
+```bash
+# Using ImageMagick
+convert logo.png -resize 192x192 public/icons/icon-192x192.png
+convert logo.png -resize 512x512 public/icons/icon-512x512.png
+```
+
+### IndexedDB Schema
+
+The offline database schema is defined in `resources/js/db/db.ts`:
+
+**Tables:**
+
+1. **submissions** - Offline submissions
+   - Fields: id, questionnaireId, answersJson, status, serverId, synced, etc.
+   - Indexes: questionnaireId, synced, serverId
+
+2. **files** - File attachments
+   - Fields: id, submissionLocalId, fileName, fileType, fileSize, blob, synced, etc.
+   - Indexes: submissionLocalId, synced
+
+3. **syncQueue** - Sync priority queue
+   - Fields: id, type, itemId, priority, attempts, createdAt
+   - Indexes: priority, type
+
+**Schema Definition:**
+
+```typescript
+import Dexie, { type EntityTable } from 'dexie';
+
+export const db = new Dexie('QISurveyDB') as Dexie & {
+    submissions: EntityTable<OfflineSubmission, 'id'>;
+    files: EntityTable<OfflineFile, 'id'>;
+    syncQueue: EntityTable<SyncQueueItem, 'id'>;
+};
+
+db.version(1).stores({
+    submissions: 'id, questionnaireId, synced, serverId',
+    files: 'id, submissionLocalId, synced',
+    syncQueue: '++id, priority, type, itemId',
+});
+```
+
+### Service Worker Registration
+
+Service worker is registered in `resources/js/pwa-register.ts`:
+
+**Auto-Registration:**
+
+```typescript
+import { registerSW } from 'virtual:pwa-register';
+
+registerSW({
+    immediate: true,
+    onRegistered(registration) {
+        console.log('[PWA] Service Worker registered');
+    },
+    onOfflineReady() {
+        console.log('[PWA] App ready to work offline');
+    },
+});
+```
+
+**Imported in `app.tsx`:**
+
+```typescript
+import './pwa-register';
+```
+
+### Backend API Endpoint for File Upload
+
+**Required Endpoint:**
+
+Create `app/Http/Controllers/Api/FileUploadController.php`:
+
+```php
+namespace App\Http\Controllers\Api;
+
+class FileUploadController extends Controller
+{
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:51200', // 50MB
+            'submission_local_id' => 'required|string',
+            'question_name' => 'required|string',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->store('submissions/files', 'public');
+
+        return response()->json([
+            'path' => $path,
+            'url' => Storage::url($path),
+        ]);
+    }
+}
+```
+
+**Route:**
+
+Add to `routes/api.php`:
+
+```php
+Route::post('/submissions/files/upload', [FileUploadController::class, 'upload'])
+    ->middleware('auth:sanctum');
+```
+
+**Storage Configuration:**
+
+Ensure `storage/app/public` is symlinked:
+
+```bash
+php artisan storage:link
+```
+
+### Testing PWA Functionality
+
+#### 1. Development Testing
+
+**Start Development Server:**
+
+```bash
+npm run dev
+```
+
+**Test Offline Mode:**
+
+1. Open browser DevTools (F12)
+2. Go to **Application** tab → **Service Workers**
+3. Check "Offline" checkbox
+4. Navigate application - should work offline
+5. Create submission offline
+6. Uncheck "Offline" - data should sync
+
+**Check IndexedDB:**
+
+1. DevTools → **Application** tab → **IndexedDB**
+2. Expand **QISurveyDB**
+3. View submissions, files, syncQueue tables
+
+#### 2. Production Build Testing
+
+**Build for Production:**
+
+```bash
+npm run build
+```
+
+**Serve Build:**
+
+```bash
+php artisan serve
+```
+
+**Test PWA Installation:**
+
+1. Open in Chrome/Edge
+2. Address bar should show install icon
+3. Click to install PWA
+4. App opens in standalone window
+
+#### 3. Mobile Testing
+
+**Android Chrome:**
+
+1. Visit site on mobile
+2. Menu → **Add to Home Screen**
+3. App icon appears on home screen
+4. Opens as standalone app
+
+**iOS Safari:**
+
+1. Visit site on iPhone/iPad
+2. Share button → **Add to Home Screen**
+3. App icon appears on home screen
+
+### Browser Compatibility
+
+**Minimum Requirements:**
+
+| Browser | Version | IndexedDB | Service Worker | PWA Install |
+|---------|---------|-----------|----------------|-------------|
+| Chrome | 90+ | ✅ | ✅ | ✅ |
+| Firefox | 88+ | ✅ | ✅ | ✅ |
+| Safari | 14+ | ✅ | ✅ | ✅ (iOS 14.5+) |
+| Edge | 90+ | ✅ | ✅ | ✅ |
+
+**Not Supported:**
+
+- Internet Explorer (any version)
+- Chrome < 90
+- Safari < 14
+- Private/Incognito mode (Service Worker disabled)
+
+### Production Deployment Considerations
+
+#### 1. HTTPS Required
+
+**PWA requires HTTPS** (except localhost):
+
+- Obtain SSL certificate (Let's Encrypt recommended)
+- Configure web server for HTTPS
+- Ensure `APP_URL` in `.env` uses `https://`
+
+#### 2. Service Worker Scope
+
+Service worker is served from `/` and caches all routes.
+
+**Web Server Configuration:**
+
+**Nginx:**
+
+```nginx
+location /sw.js {
+    add_header Cache-Control "no-cache, no-store, must-revalidate";
+    add_header Pragma "no-cache";
+    add_header Expires "0";
+}
+```
+
+**Apache:**
+
+```apache
+<Files "sw.js">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</Files>
+```
+
+#### 3. Storage Quotas
+
+**Browser Storage Limits:**
+
+- Chrome/Edge: ~60% of available disk space
+- Firefox: ~50% of available disk space
+- Safari: 1GB (prompt above 200MB)
+
+**Monitor Storage Usage:**
+
+User can check in DevTools → Application → Storage
+
+**Server-Side Considerations:**
+
+- File uploads limited to 50MB per file
+- Total offline storage: 500MB
+- Synced files removed from IndexedDB automatically
+
+#### 4. Cache Invalidation
+
+**Automatic on Deploy:**
+
+When you deploy new version:
+
+```bash
+npm run build
+```
+
+Vite generates new hashed filenames, service worker updates automatically.
+
+**Manual Cache Clear:**
+
+If needed, users can:
+
+1. DevTools → Application → Service Workers
+2. Click "Unregister"
+3. Application → Storage → "Clear site data"
+
+### Monitoring and Debugging
+
+#### Development Console Logs
+
+Look for these log patterns:
+
+```
+[PWA] Service Worker registered
+[PWA] App ready to work offline
+[IndexedDB] Submission abc-123 saved
+[FileStorage] Stored file photo.jpg (2.5 MB)
+[SyncService] Syncing submission abc-123
+[SyncService] Submission abc-123 synced successfully
+```
+
+#### Production Monitoring
+
+**Service Worker Status:**
+
+Check `/sw.js` is accessible:
+
+```bash
+curl https://yourdomain.com/sw.js
+```
+
+**IndexedDB Size:**
+
+Monitor user-reported storage issues.
+
+**Sync Failures:**
+
+Check Laravel logs for file upload errors:
+
+```bash
+tail -f storage/logs/laravel.log | grep FileSync
+```
+
+### Troubleshooting PWA Issues
+
+#### Service Worker Not Registering
+
+**Symptoms:**
+- No offline functionality
+- Console error: "Service worker registration failed"
+
+**Solutions:**
+
+1. **Check HTTPS**: PWA requires HTTPS in production
+2. **Check Build**: Run `npm run build` to generate service worker
+3. **Check Browser**: Ensure modern browser (Chrome 90+, Firefox 88+, Safari 14+)
+4. **Check Console**: Look for specific error messages
+
+#### IndexedDB Not Working
+
+**Symptoms:**
+- Offline data not saving
+- Console error: "Failed to open database"
+
+**Solutions:**
+
+1. **Check Browser Storage**: Not in private/incognito mode
+2. **Check Storage Quota**: User has sufficient disk space
+3. **Clear Existing DB**: DevTools → Application → IndexedDB → Delete QISurveyDB
+4. **Check Browser Version**: Ensure IndexedDB support
+
+#### Files Not Syncing
+
+**Symptoms:**
+- Submissions sync but files don't upload
+- "Sync Error" badge persists
+
+**Solutions:**
+
+1. **Check API Endpoint**: Verify `/api/submissions/files/upload` exists
+2. **Check File Size**: Max 50MB per file
+3. **Check Storage Link**: Run `php artisan storage:link`
+4. **Check Permissions**: `storage/app/public` writable
+5. **Check Logs**: Look for upload errors in Laravel logs
+
+#### PWA Not Installing
+
+**Symptoms:**
+- No "Install" button appears
+- Can't add to home screen
+
+**Solutions:**
+
+1. **Check Manifest**: Verify `public/icons/` has required icons
+2. **Check HTTPS**: Must be HTTPS (except localhost)
+3. **Check Criteria**:
+   - Has service worker
+   - Has web manifest
+   - Served over HTTPS
+   - Has 192x192 and 512x512 icons
+4. **Check Browser**: Some browsers don't support PWA install
+
+### Phase 3 File Checklist
+
+Verify these files exist after Phase 3 setup:
+
+**Frontend:**
+- [ ] `resources/js/db/db.ts` - IndexedDB schema
+- [ ] `resources/js/db/schema.ts` - TypeScript types
+- [ ] `resources/js/services/fileStorageService.ts` - File storage
+- [ ] `resources/js/services/fileSyncService.ts` - File upload sync
+- [ ] `resources/js/services/syncService.ts` - Main sync orchestrator
+- [ ] `resources/js/services/mergeService.ts` - Conflict resolution
+- [ ] `resources/js/hooks/useOfflineSubmission.ts` - Offline submission hook
+- [ ] `resources/js/hooks/useFileUpload.ts` - File upload hook
+- [ ] `resources/js/hooks/useSyncEngine.ts` - Sync engine hook
+- [ ] `resources/js/pwa-register.ts` - Service worker registration
+- [ ] `public/icons/icon-192x192.png` - PWA icon
+- [ ] `public/icons/icon-512x512.png` - PWA icon
+
+**Backend:**
+- [ ] `app/Http/Controllers/Api/FileUploadController.php` - File upload endpoint (if created)
+- [ ] Route added to `routes/api.php`
+- [ ] Storage symlink created: `php artisan storage:link`
+
+**Tests:**
+- [ ] `resources/js/__tests__/db/db.test.ts`
+- [ ] `resources/js/__tests__/hooks/useOfflineSubmission.test.ts`
+- [ ] `resources/js/__tests__/services/syncService.test.ts`
+
+**Configuration:**
+- [ ] `vite.config.js` - PWA plugin configured
+- [ ] `package.json` - Dependencies installed
+
+### Performance Optimization
+
+**Reduce Bundle Size:**
+
+Already optimized with code splitting in `app.tsx`:
+
+```typescript
+const Dashboard = React.lazy(() => import('@/pages/dashboard/Dashboard'));
+const SubmissionForm = React.lazy(() => import('@/pages/submissions/SubmissionForm'));
+// etc.
+```
+
+**Service Worker Caching:**
+
+Static assets cached automatically by Workbox.
+
+**Database Performance:**
+
+IndexedDB queries optimized with indexes:
+
+```typescript
+db.submissions.where('synced').equals(0).toArray();  // Fast with index
+db.files.where('submissionLocalId').equals(id).toArray();  // Fast with index
+```
+
+### Security Considerations
+
+**Data at Rest:**
+
+- IndexedDB uses browser's built-in storage security
+- Data encrypted if device has full-disk encryption
+- Not recommended for highly sensitive data in offline storage
+
+**Data in Transit:**
+
+- All API calls use HTTPS
+- File uploads via secure multipart/form-data
+- Bearer token authentication (Sanctum)
+
+**Best Practices:**
+
+- Educate users to sync frequently
+- Don't store sensitive data offline long-term
+- Implement session timeout for inactive users
+- Regular security audits
+
+---
 
 ## Running the Application
 

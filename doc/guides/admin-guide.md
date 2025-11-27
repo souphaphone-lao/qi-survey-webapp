@@ -1,7 +1,7 @@
 # QI Survey Web Application - Administrator Guide
 
-**Version:** 1.0
-**Last Updated:** November 26, 2025
+**Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Last Updated:** November 27, 2025
 **Audience:** System Administrators, Institution Managers
 
 ---
@@ -16,9 +16,10 @@
 6. [Managing Questionnaires](#managing-questionnaires)
 7. [Question-Level Permissions](#question-level-permissions)
 8. [Reviewing Submissions](#reviewing-submissions)
-9. [Notifications](#notifications)
-10. [Best Practices](#best-practices)
-11. [Troubleshooting](#troubleshooting)
+9. [Monitoring Offline Submissions & Sync](#monitoring-offline-submissions--sync)
+10. [Notifications](#notifications)
+11. [Best Practices](#best-practices)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -620,6 +621,349 @@ For a hospital survey:
 
 ---
 
+## Monitoring Offline Submissions & Sync
+
+### Overview
+
+The application now supports **offline functionality** through Progressive Web App (PWA) technology. Enumerators can create and edit submissions without internet connection, and data automatically syncs when connection is restored.
+
+As an administrator, you should be aware of:
+- How offline mode works for your enumerators
+- How to monitor sync status of submissions
+- How to troubleshoot sync issues
+- Best practices for supporting offline users
+
+### How Offline Mode Works
+
+**For Enumerators:**
+
+When internet connection is lost:
+1. Enumerators can continue working on submissions
+2. Data is saved locally in browser storage (IndexedDB)
+3. Auto-save occurs every 30 seconds
+4. Files can be attached (up to 50MB per file, 500MB total)
+5. When connection returns, data syncs automatically to server
+
+**Connection Status Indicator:**
+- 🟢 **Online** - Connected, all data synced
+- 🟠 **Offline** - No connection, saving locally
+- 🔵 **Syncing...** - Uploading data to server
+- 🟠 **Sync (X)** - X items waiting to sync (clickable)
+
+### Sync Status in Submissions List
+
+As an admin, you can see sync status for all submissions:
+
+**Sync Status Badges:**
+
+| Badge | Meaning | Admin Action |
+|-------|---------|--------------|
+| ✓ **Synced** (green) | Saved to server, current | No action needed |
+| ⏳ **Pending** (orange, spinning) | Waiting to upload from user's device | Wait for user to come online |
+| ⚠️ **Sync Error** (red) | Failed to sync (connection/server issue) | Investigate error, contact user |
+
+**Filtering by Sync Status:**
+
+1. Go to **Submissions** page
+2. Use sync status filter:
+   - **All** - Show all submissions regardless of sync status
+   - **Synced** - Show only server-saved submissions (reliable data)
+   - **Pending (X)** - Show unsynced items (number shows count)
+
+**Important Notes:**
+
+- **Pending submissions** are still on user's device, not yet on server
+- If user clears browser data before syncing, pending data is LOST
+- Encourage users to sync before closing browser or clearing cache
+
+### Understanding Sync Process
+
+**Sync Priority Queue:**
+
+1. **High Priority** (synced first):
+   - Submissions marked as "Submitted" (waiting for your approval)
+
+2. **Normal Priority**:
+   - Draft submissions
+
+3. **After Submissions**:
+   - File attachments
+
+**Automatic Sync:**
+- Triggers 500ms after connection is restored
+- Runs in background
+- Progress shown to user via toast notification
+- Max 5 retry attempts per item with exponential backoff
+
+**Manual Sync:**
+- User can click "Sync (X)" button to trigger immediately
+- Useful before deadlines or browser closure
+
+### Conflict Resolution
+
+**What happens if user edits offline while someone else (or admin) edits online?**
+
+The system uses **per-question merge strategy**:
+
+✅ **User's local changes WIN** for questions they modified offline
+✅ **Server changes WIN** for questions user didn't touch
+✅ **Automatically resolved** - no manual intervention needed
+✅ **Conflicts logged** for administrator review (backend logs)
+
+**Example Scenario:**
+
+```
+Enumerator (offline):         Admin (online):
+- Question 1: "New answer"    - Question 1: "Admin edit"
+- Question 2: (unchanged)     - Question 2: "Server edit"
+- Question 3: "My edit"       - Question 3: (unchanged)
+
+Result after sync:
+- Question 1: "New answer"    ← Enumerator wins (modified offline)
+- Question 2: "Server edit"   ← Server wins (not touched offline)
+- Question 3: "My edit"       ← Enumerator wins (modified offline)
+```
+
+**Admin Actions:**
+- Review submissions carefully for potential conflicts
+- Check backend logs for conflict reports
+- If data looks suspicious, reject with clarification request
+
+### Monitoring Offline Users
+
+**Dashboard Indicators:**
+
+While the dashboard doesn't show "offline users" directly, you can:
+1. Monitor **Pending Approvals** count
+2. Check for submissions with "Pending" sync status
+3. Review submission timestamps (long gaps may indicate offline work)
+
+**Submission List Indicators:**
+
+Look for:
+- 🟠 **Pending** badges - user created offline, not yet synced
+- Recent submissions with sync errors - may need user follow-up
+- Multiple submissions from same user in short time - possible offline batch sync
+
+### Supporting Offline Enumerators
+
+**Best Practices to Communicate:**
+
+✅ **Before Going Offline:**
+- Load all needed questionnaires (cache them)
+- Sync any pending work
+- Check storage space available
+
+✅ **While Offline:**
+- Save frequently (auto-save runs every 30 seconds)
+- Monitor storage usage
+- Keep track of created submissions
+
+✅ **After Returning Online:**
+- Wait for auto-sync to complete
+- Verify "Synced ✓" badges appear
+- Check for "Sync Error" badges
+- Retry failed syncs if any
+
+**Storage Limits:**
+
+Educate users about:
+- **50MB per file** maximum
+- **500MB total** offline storage
+- Storage automatically freed when files sync
+- Need to sync regularly to free space
+
+### Troubleshooting Sync Issues
+
+**Problem:** User reports "Sync keeps failing"
+
+**Admin Actions:**
+
+1. **Check Server Logs:**
+   - Look for API errors during sync
+   - Check database connection issues
+   - Verify storage quotas not exceeded
+
+2. **Verify Network:**
+   - Confirm server is accessible
+   - Check for firewall issues
+   - Test API endpoints are responding
+
+3. **User-Side Actions:**
+   - Ask user to try manual sync (click "Sync (X)" button)
+   - Ask user to refresh page and retry
+   - Check if user has stable connection
+   - Try different network (WiFi vs mobile data)
+
+4. **Data Recovery:**
+   - If sync impossible, ask user to copy data manually
+   - User can screenshot or export answers
+   - Create new submission from copied data
+
+---
+
+**Problem:** User says "Submission disappeared after closing browser"
+
+**Explanation:**
+
+- Data was saved locally but not synced to server
+- User cleared browser cache or storage
+- Browser storage was automatically cleared by OS
+
+**Prevention:**
+- Educate users to always sync before closing browser
+- Look for "Synced ✓" confirmation
+- Don't clear browser data if pending syncs exist
+
+---
+
+**Problem:** Admin sees duplicate submissions from same user
+
+**Possible Causes:**
+
+1. User created multiple versions offline
+2. Sync retry created duplicate (shouldn't happen with current implementation)
+3. User manually created multiple times
+
+**Admin Actions:**
+- Review both submissions
+- Keep the most complete/accurate one
+- Delete or reject duplicates
+- Educate user on checking existing drafts before creating new
+
+---
+
+**Problem:** File attachments missing from submission
+
+**Possible Causes:**
+
+1. Files still pending upload (check sync status)
+2. File sync failed (network issue during upload)
+3. User attached files offline but didn't sync
+
+**Admin Actions:**
+- Check submission sync status
+- Ask user to check their pending syncs
+- Request user to re-attach files if necessary
+- Check server logs for upload errors
+
+---
+
+### Data Safety & Recovery
+
+**Server is Source of Truth:**
+
+- Only **synced** submissions are permanently stored
+- **Pending** submissions are vulnerable (local browser storage only)
+- Browser storage can be cleared by user or OS
+- Always encourage frequent syncing
+
+**No Server-Side Recovery for Unsynced Data:**
+
+- If user clears browser data before syncing: **data is lost**
+- If user's device crashes before syncing: **data is lost**
+- Server cannot recover data that never synced
+
+**Best Practices:**
+
+✅ Educate users to sync before:
+- Closing browser
+- Clearing cache
+- End of work session
+- Important deadlines
+
+✅ Monitor for pending submissions:
+- Filter by "Pending" status
+- Follow up with users who have long-pending items
+- Remind users to sync during team meetings
+
+### Browser Compatibility & Requirements
+
+**Offline Mode Requirements:**
+
+The offline functionality requires:
+- **IndexedDB support** (all modern browsers)
+- **Service Worker support** (PWA)
+- **Sufficient storage quota** (at least 500MB available)
+
+**Supported Browsers:**
+
+✅ Fully Supported:
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+**User Browser Issues:**
+
+If users report offline mode not working:
+1. Check browser version (must meet minimum requirements)
+2. Verify browser storage is enabled (not in private/incognito mode)
+3. Check available storage space
+4. Try different browser
+
+### Monitoring Backend Services
+
+**Server-Side Requirements:**
+
+Ensure these services are running:
+- **API endpoints** - `/api/submissions/*` must be accessible
+- **File upload endpoint** - `/api/submissions/files/upload`
+- **Database** - Must accept synced submissions
+- **Storage** - Server must have space for uploaded files
+
+**Health Checks:**
+
+Regular monitoring:
+- API response times
+- Database connection pool
+- File storage usage
+- Error rates in logs
+
+**Logs to Monitor:**
+
+Look for these log patterns:
+```
+[FileSync] Uploading file xyz.jpg (2.5 MB)
+[FileSync] File xyz uploaded successfully
+[SyncService] Syncing submission abc-123
+[SyncService] Submission abc-123 synced successfully
+[MergeService] Conflict detected: Question 5 (local wins)
+```
+
+### User Training Recommendations
+
+**Topics to Cover:**
+
+1. **Connection Status Awareness**
+   - How to read connection indicators
+   - What each status means
+   - When to manually sync
+
+2. **Offline Best Practices**
+   - Preparing before going offline
+   - Storage limits and management
+   - Syncing after returning online
+
+3. **Data Safety**
+   - Importance of syncing regularly
+   - Risk of clearing browser data
+   - Checking for "Synced ✓" confirmation
+
+4. **Troubleshooting**
+   - What to do if sync fails
+   - How to retry failed syncs
+   - When to contact admin
+
+**Training Materials:**
+
+- Provide **Enumerator Guide** (includes offline section)
+- Provide **Offline Usage Guide** (comprehensive end-user guide)
+- Conduct hands-on training sessions
+- Create quick reference cards for field staff
+
+---
+
 ## Notifications
 
 Real-time notifications keep you informed of submission activities.
@@ -953,6 +1297,6 @@ For additional support:
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** November 26, 2025
+**Document Version:** 2.0 (Phase 3 - Offline/PWA Support)
+**Last Updated:** November 27, 2025
 **For Questions:** Contact your system administrator

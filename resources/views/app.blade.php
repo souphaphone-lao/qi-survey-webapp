@@ -7,6 +7,15 @@
 
     <title>{{ config('app.name', 'QI Survey') }}</title>
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/build/manifest.webmanifest">
+    <meta name="theme-color" content="#4F46E5">
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.tsx'])
 </head>

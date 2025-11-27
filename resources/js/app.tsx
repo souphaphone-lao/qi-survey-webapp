@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
 import Login from '@/pages/auth/Login';
 import Dashboard from '@/pages/dashboard/Dashboard';
+import { registerServiceWorker } from '@/pwa-register';
 
 // Lazy load pages for better performance
 const UserList = React.lazy(() => import('@/pages/users/UserList'));
@@ -300,3 +301,6 @@ if (container) {
     const root = createRoot(container);
     root.render(<App />);
 }
+
+// Register service worker for PWA functionality
+registerServiceWorker();

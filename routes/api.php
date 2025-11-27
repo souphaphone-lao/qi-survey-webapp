@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\InstitutionController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PingController;
 use App\Http\Controllers\Api\QuestionPermissionController;
 use App\Http\Controllers\Api\QuestionnaireController;
 use App\Http\Controllers\Api\SubmissionController;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/ping', [PingController::class, 'ping'])->middleware('throttle:60,1'); // Rate limit: 60 requests per minute
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import NotificationBell from './NotificationBell';
+import { ConnectionStatus } from '@/components/common/ConnectionStatus';
+import { SyncProgress } from '@/components/common/SyncProgress';
 
 interface NavItem {
     name: string;
@@ -63,6 +65,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <div className="hidden sm:ml-6 sm:flex sm:items-center">
                             <div className="relative ml-3">
                                 <div className="flex items-center space-x-4">
+                                    <ConnectionStatus />
                                     <NotificationBell />
                                     <span className="text-sm text-gray-700">
                                         {user?.name}
@@ -132,11 +135,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             ))}
                         </div>
                         <div className="border-t border-gray-200 pb-3 pt-4">
-                            <div className="flex items-center px-4">
+                            <div className="flex items-center justify-between px-4">
                                 <div>
                                     <div className="text-base font-medium text-gray-800">{user?.name}</div>
                                     <div className="text-sm font-medium text-gray-500">{user?.email}</div>
                                 </div>
+                                <ConnectionStatus />
                             </div>
                             <div className="mt-3 space-y-1">
                                 <button
@@ -154,6 +158,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <main className="py-6">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
             </main>
+
+            {/* Sync Progress Toast */}
+            <SyncProgress />
         </div>
     );
 }
