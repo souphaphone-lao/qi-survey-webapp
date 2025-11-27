@@ -1,15 +1,23 @@
 import axios from 'axios';
 import type {
     AuthResponse,
+    DashboardFilters,
+    DashboardOverview,
     DashboardStats,
     Department,
+    ExportFilters,
+    ExportFormat,
+    ExportJob,
+    InstitutionBreakdown,
     Institution,
     LoginCredentials,
     Notification,
     PaginatedResponse,
+    QuestionnaireStats,
     QuestionPermission,
     Questionnaire,
     Submission,
+    TimeSeriesData,
     User,
 } from '@/types';
 
@@ -77,6 +85,31 @@ export const dashboardApi = {
     getStats: async (params?: { from_date?: string; to_date?: string }): Promise<DashboardStats> => {
         const response = await api.get<DashboardStats>('/dashboard/stats', { params });
         return response.data;
+    },
+
+    // Phase 4 Dashboard endpoints
+    getOverview: async (filters?: DashboardFilters): Promise<DashboardOverview> => {
+        const response = await api.get<{ data: DashboardOverview }>('/dashboard/overview', { params: filters });
+        return response.data.data;
+    },
+
+    getTrends: async (params: {
+        period: 'daily' | 'weekly' | 'monthly';
+        date_from: string;
+        date_to: string;
+    } & DashboardFilters): Promise<TimeSeriesData[]> => {
+        const response = await api.get<{ data: TimeSeriesData[] }>('/dashboard/trends', { params });
+        return response.data.data;
+    },
+
+    getInstitutionBreakdown: async (filters?: DashboardFilters): Promise<InstitutionBreakdown[]> => {
+        const response = await api.get<{ data: InstitutionBreakdown[] }>('/dashboard/institutions', { params: filters });
+        return response.data.data;
+    },
+
+    getQuestionnaireStats: async (code: string, filters?: DashboardFilters): Promise<QuestionnaireStats> => {
+        const response = await api.get<{ data: QuestionnaireStats }>(`/dashboard/questionnaire/${code}`, { params: filters });
+        return response.data.data;
     },
 };
 
@@ -292,6 +325,38 @@ export const questionPermissionsApi = {
 
     delete: async (id: number): Promise<void> => {
         await api.delete(`/question-permissions/${id}`);
+    },
+};
+
+// Exports API (Phase 4)
+export const exportsApi = {
+    list: async (params?: { questionnaire_code?: string; status?: string }): Promise<PaginatedResponse<ExportJob>> => {
+        const response = await api.get<PaginatedResponse<ExportJob>>('/exports', { params });
+        return response.data;
+    },
+
+    get: async (id: number): Promise<ExportJob> => {
+        const response = await api.get<{ data: ExportJob }>(`/exports/${id}`);
+        return response.data.data;
+    },
+
+    create: async (questionnaireCode: string, format: ExportFormat, filters?: ExportFilters): Promise<ExportJob> => {
+        const response = await api.post<{ data: ExportJob }>(`/exports/questionnaires/${questionnaireCode}`, {
+            format,
+            filters,
+        });
+        return response.data.data;
+    },
+
+    download: async (id: number): Promise<Blob> => {
+        const response = await api.get(`/exports/${id}/download`, {
+            responseType: 'blob',
+        });
+        return response.data;
+    },
+
+    delete: async (id: number): Promise<void> => {
+        await api.delete(`/exports/${id}`);
     },
 };
 

@@ -21,6 +21,9 @@ const PermissionMatrix = React.lazy(() => import('@/pages/questionnaires/Permiss
 const SubmissionList = React.lazy(() => import('@/pages/submissions/SubmissionList'));
 const SubmissionForm = React.lazy(() => import('@/pages/submissions/SubmissionForm'));
 const SubmissionView = React.lazy(() => import('@/pages/submissions/SubmissionView'));
+const DashboardOverview = React.lazy(() => import('@/pages/dashboard/DashboardOverview'));
+const QuestionnaireDashboard = React.lazy(() => import('@/pages/dashboard/QuestionnaireDashboard'));
+const ExportsPage = React.lazy(() => import('@/pages/exports/ExportsPage'));
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -99,6 +102,26 @@ function App() {
                         {/* Protected routes */}
                         <Route
                             path="/dashboard"
+                            element={
+                                <ProtectedRoute>
+                                    <React.Suspense fallback={<LoadingFallback />}>
+                                        <DashboardOverview />
+                                    </React.Suspense>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/dashboard/questionnaires"
+                            element={
+                                <ProtectedRoute>
+                                    <React.Suspense fallback={<LoadingFallback />}>
+                                        <QuestionnaireDashboard />
+                                    </React.Suspense>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/dashboard/old"
                             element={
                                 <ProtectedRoute>
                                     <Dashboard />
@@ -281,6 +304,18 @@ function App() {
                                 <ProtectedRoute>
                                     <React.Suspense fallback={<LoadingFallback />}>
                                         <SubmissionForm />
+                                    </React.Suspense>
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Exports */}
+                        <Route
+                            path="/exports"
+                            element={
+                                <ProtectedRoute>
+                                    <React.Suspense fallback={<LoadingFallback />}>
+                                        <ExportsPage />
                                     </React.Suspense>
                                 </ProtectedRoute>
                             }

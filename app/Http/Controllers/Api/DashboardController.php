@@ -7,12 +7,17 @@ use App\Models\Institution;
 use App\Models\Questionnaire;
 use App\Models\Submission;
 use App\Models\User;
+use App\Services\DashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected DashboardService $dashboardService
+    ) {}
     public function stats(Request $request): JsonResponse
     {
         $user = auth()->user();
@@ -115,5 +120,66 @@ class DashboardController extends Controller
             'recent_submissions' => $recentSubmissions,
             ...$adminStats,
         ]);
+    }
+
+    /**
+     * Get dashboard overview (Phase 4)
+     */
+    public function overview(Request $request): JsonResponse
+    {
+        $filters = $request->only(['institution_id', 'date_from', 'date_to', 'questionnaire_code', 'status']);
+
+        $data = $this->dashboardService->getOverview($filters);
+
+        return response()->json(['data' => $data]);
+    }
+
+    /**
+     * Get submission trends over time (Phase 4)
+     */
+    public function trends(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'period' => 'required|in:daily,weekly,monthly',
+            'date_from' => 'required|date',
+            'date_to' => 'required|date|after:date_from',
+            'institution_id' => 'nullable|integer|exists:institutions,id',
+            'questionnaire_code' => 'nullable|string',
+        ]);
+
+        $filters = $request->only(['institution_id', 'questionnaire_code']);
+
+        $data = $this->dashboardService->getTrends(
+            $validated['period'],
+            Carbon::parse($validated['date_from']),
+            Carbon::parse($validated['date_to']),
+            $filters
+        );
+
+        return response()->json(['data' => $data]);
+    }
+
+    /**
+     * Get institution breakdown (Phase 4)
+     */
+    public function institutions(Request $request): JsonResponse
+    {
+        $filters = $request->only(['institution_id', 'date_from', 'date_to', 'questionnaire_code', 'status']);
+
+        $data = $this->dashboardService->getInstitutionBreakdown($filters);
+
+        return response()->json(['data' => $data]);
+    }
+
+    /**
+     * Get questionnaire-specific statistics (Phase 4)
+     */
+    public function questionnaire(Request $request, string $code): JsonResponse
+    {
+        $filters = $request->only(['version', 'institution_id', 'date_from', 'date_to', 'status']);
+
+        $data = $this->dashboardService->getQuestionnaireStats($code, $filters);
+
+        return response()->json(['data' => $data]);
     }
 }

@@ -4,7 +4,9 @@
       "Bash(npm run test:coverage:*)",
       "Bash(php artisan test:*)",
       "Bash(php artisan route:list:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(php artisan make:migration:*)",
+      "Bash(php artisan migrate:*)"
     ],
     "deny": [],
     "ask": []

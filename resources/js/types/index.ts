@@ -207,3 +207,105 @@ export interface Notification {
     created_at: string;
     updated_at: string;
 }
+
+// Dashboard Types (Phase 4)
+export interface DashboardFilters {
+    institution_id?: number;
+    date_from?: string;
+    date_to?: string;
+    questionnaire_code?: string;
+    status?: SubmissionStatus;
+}
+
+export interface DashboardSummary {
+    total_submissions: number;
+    draft: number;
+    submitted: number;
+    approved: number;
+    rejected: number;
+}
+
+export interface TrendData {
+    current: number;
+    previous: number;
+    change: number;
+}
+
+export interface DashboardTrends {
+    total: TrendData;
+    approved: TrendData;
+    rejected: TrendData;
+}
+
+export interface StatusDistribution {
+    status: SubmissionStatus;
+    count: number;
+    percentage: number;
+}
+
+export interface DashboardOverview {
+    summary: DashboardSummary;
+    trends: DashboardTrends;
+    status_distribution: StatusDistribution[];
+}
+
+export interface TimeSeriesData {
+    date: string;
+    draft: number;
+    submitted: number;
+    approved: number;
+    rejected: number;
+    total: number;
+}
+
+export interface InstitutionBreakdown {
+    id: number;
+    name: string;
+    code: string;
+    level: string;
+    total_submissions: number;
+    draft: number;
+    submitted: number;
+    approved: number;
+    rejected: number;
+}
+
+export interface QuestionnaireVersionBreakdown {
+    version: number;
+    count: number;
+    approved: number;
+}
+
+export interface QuestionnaireStats {
+    summary: DashboardSummary;
+    version_breakdown: QuestionnaireVersionBreakdown[];
+}
+
+// Export Types (Phase 4)
+export type ExportFormat = 'csv' | 'xlsx';
+export type ExportStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface ExportFilters {
+    institution_id?: number;
+    date_from?: string;
+    date_to?: string;
+    status?: SubmissionStatus;
+    version?: number;
+}
+
+export interface ExportJob {
+    id: number;
+    user_id: number;
+    questionnaire_code: string;
+    format: ExportFormat;
+    status: ExportStatus;
+    filters: ExportFilters;
+    file_path: string | null;
+    file_size: number | null;
+    error_message: string | null;
+    started_at: string | null;
+    completed_at: string | null;
+    expires_at: string | null;
+    created_at: string;
+    is_expired?: boolean;
+}

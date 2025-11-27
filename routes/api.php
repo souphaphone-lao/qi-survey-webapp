@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\InstitutionController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PingController;
@@ -24,6 +25,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/overview', [DashboardController::class, 'overview']);
+        Route::get('/trends', [DashboardController::class, 'trends']);
+        Route::get('/institutions', [DashboardController::class, 'institutions']);
+        Route::get('/questionnaire/{code}', [DashboardController::class, 'questionnaire']);
+    });
 
     // Users
     Route::apiResource('users', UserController::class);
@@ -60,4 +67,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/submissions/{submission}/approve', [SubmissionController::class, 'approve']);
     Route::post('/submissions/{submission}/reject', [SubmissionController::class, 'reject']);
     Route::apiResource('submissions', SubmissionController::class);
+
+    // Exports
+    Route::prefix('exports')->group(function () {
+        Route::get('/', [ExportController::class, 'index']); // Get export history
+        Route::post('/questionnaires/{questionnaireCode}', [ExportController::class, 'store']); // Request export
+        Route::get('/{exportJob}', [ExportController::class, 'show']); // Get export status
+        Route::get('/{exportJob}/download', [ExportController::class, 'download']); // Download export
+        Route::delete('/{exportJob}', [ExportController::class, 'destroy']); // Delete export
+    });
 });
